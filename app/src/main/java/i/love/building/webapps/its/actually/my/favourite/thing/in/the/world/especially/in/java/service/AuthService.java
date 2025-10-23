@@ -1,0 +1,50 @@
+package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
+
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.UserAlreadyExistsException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
+
+@Service
+public class AuthService {
+    private final UserService users;
+    
+    @Autowired
+    public AuthService(final UserService users) {
+        this.users = users;
+    }
+    
+    public User registerUser(String name, String plainPassword, User.Role role) throws UserAlreadyExistsException {
+        Optional<User> existing = this.users.getByName(name);
+        if (existing.isPresent()) {
+            throw new UserAlreadyExistsException(existing.get().getId(), name);
+        }
+        String salt = BCrypt.gensalt();
+        String hashPassword = BCrypt.hashpw(plainPassword, salt);
+        User user = new User(name, hashPassword, role);
+        return this.users.create(user);
+    }
+
+    public boolean changePassword(Long id, String plainPassword) {
+        String salt = BCrypt.gensalt();
+        String hashPassword = BCrypt.hashpw(plainPassword, salt);
+        return this.users.updateUserPasswordHash(id, hashPassword);
+    }
+
+    public Optional<User> passwordHashMatch(String name, String plainPassword) {
+        Optional<User> user = this.users.getByName(name);
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+        String hash = user.get().getPasswordHash();
+        boolean valid = BCrypt.checkpw(plainPassword, hash);
+        if (!valid) {
+            return Optional.empty();
+        }
+        return Optional.of(user.get());
+    }
+}

@@ -1,0 +1,43 @@
+package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java;
+
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.AuthService;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.UnreachableCodeException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.UserAlreadyExistsException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.UserRepository;
+
+@Component
+public class AdminInitializingBean implements InitializingBean {
+    @Value("#{environment.ADMIN_PASSWORD}")
+    private String adminPassword;
+
+    @Value("#{environment.ADMIN_USERNAME}")
+    private String adminUsername;
+
+    @Autowired
+    private UserRepository usersRepo;
+    @Autowired
+    private AuthService auth;
+
+    @Override
+    public void afterPropertiesSet() {
+        Optional<Long> adminId = this.usersRepo.findByName(this.adminUsername).map(User::getId);
+        if (adminId.isEmpty()) {
+            try {
+                this.auth.registerUser(this.adminUsername, this.adminPassword, User.Role.admin);
+            } catch (UserAlreadyExistsException e) {
+                throw new UnreachableCodeException();
+            }
+            return;
+        }
+        this.auth.changePassword(adminId.get(), adminPassword);
+    }
+}

@@ -1,0 +1,80 @@
+plugins {
+    id 'application'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'org.liquibase.gradle' version '2.2.0'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.liquibase.gradle'
+
+def envProperties = new Properties()
+def envFile = file('../.env')
+if (envFile.exists()) {
+    envFile.withReader('UTF-8') { reader -> envProperties.load(reader) }
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    // Use JUnit Jupiter for testing.
+    testImplementation libs.junit.jupiter
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // This dependency is used by the application.
+    implementation libs.guava
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    implementation 'org.postgresql:postgresql:42.2.5'
+
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.24.0'
+    liquibaseRuntime 'info.picocli:picocli:4.7.5'
+    liquibaseRuntime 'org.yaml:snakeyaml:1.33'
+    liquibaseRuntime 'org.postgresql:postgresql:42.2.5'
+}
+
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.App'
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+task('deploy changeLog') {
+    def dbName = envProperties.getProperty('POSTGRES_DB')
+    def dbHost = envProperties.getProperty('POSTGRES_HOST')
+    
+    doFirst() {
+        liquibase {
+            activities {
+                main {
+                    changelogFile "app/src/main/resources/db/migrations/changelog.sql"
+                    url "jdbc:postgresql://${dbHost}:5432/${dbName}"
+                    username envProperties.getProperty("POSTGRES_USER")
+                    password envProperties.getProperty("POSTGRES_PASSWORD")
+                    driver "org.postgresql.Driver"
+                }
+            }
+        }
+    }
+}
+update.dependsOn('deploy changeLog')
