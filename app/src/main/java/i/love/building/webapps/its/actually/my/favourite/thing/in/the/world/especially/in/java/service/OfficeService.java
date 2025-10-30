@@ -39,12 +39,28 @@ public class OfficeService {
         return this.offices.save(office);
     }
 
+    public Optional<Workplace> getWorkplaceById(Long workplaceId) {
+        return this.workplaces.findById(workplaceId);
+    }
+
+    public Optional<MeetingRoom> getMeetingRoomById(Long meetingRoomId) {
+        return this.meetingRooms.findById(meetingRoomId);
+    }
+
     public List<Workplace> getWorkplacesByOfficeId(Long officeId) {
         return this.workplaces.findByOfficeId(officeId);
     }
 
     public List<MeetingRoom> getMeetingRoomsByOfficeId(Long officeId) {
         return this.meetingRooms.findByOfficeId(officeId);
+    }
+
+    public void deleteMeetingRoomByOfficeId(Long officeId) {
+        this.meetingRooms.deleteByOfficeId(officeId);
+    }
+
+    public void deleteWorkplacesByOfficeId(Long officeId) {
+        this.workplaces.deleteByOfficeId(officeId);
     }
 
     public Workplace createWorkplace(Office office, Long monitors, AudioEquipmentState audioEquipment) {

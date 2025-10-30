@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.Headers;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.common.DeleteResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.UserDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,21 +87,30 @@ public class UserController {
         responses = {
             @ApiResponse(
                 responseCode = "200",
-                content = @Content(schema = @Schema(implementation = DeleteResponseDTO.class))
+                content = @Content(schema = @Schema(implementation = Void.class))
             ),
             @ApiResponse(
                 responseCode = "401",
                 description = "can not delete the main admin user",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class))
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "user with specified id was not found",
+                content = @Content()
             )
         }
     )
-    public ResponseEntity<DeleteResponseDTO> deleteUserByName(@NotBlank @PathVariable String username) {
+    public ResponseEntity<Void> deleteUserByName(@NotBlank @PathVariable String username) {
         if (username == this.adminUsername) {
             throw new ProblemResponseException(HttpStatus.UNAUTHORIZED, "can't delete main admin user");
         }
         boolean deleted = this.users.deleteByName(username);
-        return ResponseEntity.ok(new DeleteResponseDTO(deleted));
+        if (deleted) {
+            return ResponseEntity.ok().build();
+        } else {
+            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "user with name '%s' not found", username);
+        }
     }
 
     @GetMapping(value = "/by-name/{username}")
