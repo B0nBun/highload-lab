@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.AuthService;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.UnreachableCodeException;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.UserAlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.UserRepository;
 
@@ -33,7 +33,7 @@ public class AdminInitializingBean implements InitializingBean {
         if (adminId.isEmpty()) {
             try {
                 this.auth.registerUser(this.adminUsername, this.adminPassword, User.Role.admin);
-            } catch (UserAlreadyExistsException e) {
+            } catch (AlreadyExistsException e) {
                 throw new UnreachableCodeException();
             }
             return;

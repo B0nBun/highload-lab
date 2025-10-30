@@ -3,7 +3,7 @@
 --changeset b0nbun:1
 create table office (
   id serial primary key,
-  name varchar(255) not null,
+  name varchar(255) unique not null check (name <> ''),
   map bytea
 );
 
