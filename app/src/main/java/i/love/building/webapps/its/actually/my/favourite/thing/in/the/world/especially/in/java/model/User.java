@@ -13,7 +13,7 @@ import jakarta.persistence.Column;
 @Table(name="users")
 public class User {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
 
@@ -35,7 +35,7 @@ public class User {
     }
 
     public User() {}
-
+    
     public User(String name, String passwordHash, User.Role role) {
         this.name = name;
         this.passwordHash = passwordHash;

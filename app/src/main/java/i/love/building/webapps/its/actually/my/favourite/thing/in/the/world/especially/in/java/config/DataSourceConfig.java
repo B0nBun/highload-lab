@@ -19,7 +19,7 @@ public class DataSourceConfig {
     @Primary
     @Bean
     public DataSource getDataSource() {
-        String url = String.format("jdbc:postgresql://%s:5432/%s", postgresHost, postgresDb);
+        String url = String.format("jdbc:postgresql://%s:5432/%s?stringtype=unspecified", postgresHost, postgresDb);
         DataSourceBuilder<?> b = DataSourceBuilder.create();
         return b
             .driverClassName("org.postgresql.Driver")

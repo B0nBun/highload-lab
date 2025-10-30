@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.UserAlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.auth.LoginRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.auth.LoginResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.auth.RegisterRequestDTO;
@@ -51,11 +51,11 @@ public class AuthController {
         try {
             User user = this.auth.registerUser(req.username(), req.plainPassword(), req.role());
             return ResponseEntity.ok(RegisterResponseDTO.fromModel(user));
-        } catch (UserAlreadyExistsException ex) {
+        } catch (AlreadyExistsException ex) {
             throw new ProblemResponseException(
                 HttpStatus.BAD_REQUEST,
                 ex,
-                "user with name '%s' already exists", ex.getUsername()
+                "user '%s' already exists", ex.getIdentifier()
             );
         }
     }
@@ -81,8 +81,6 @@ public class AuthController {
         return user.
             map(LoginResponseDTO::fromModel).
             map(ResponseEntity::ok).
-            orElseThrow(() -> {
-                throw new ProblemResponseException(HttpStatus.UNAUTHORIZED, "invalid username or password");
-            });
+            orElseThrow(() ->  new ProblemResponseException(HttpStatus.UNAUTHORIZED, "invalid username or password"));
     }
 }

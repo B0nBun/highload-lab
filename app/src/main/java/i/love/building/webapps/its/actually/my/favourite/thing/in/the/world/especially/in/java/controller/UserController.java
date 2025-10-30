@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.Headers;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.DeleteUserResponseDTO;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.common.DeleteResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.UserDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,6 +49,7 @@ public class UserController {
         }
     )
 
+    // TODO: Infinite scroll or smth from requirements?
     public ResponseEntity<List<UserDTO>> getUsers(
         @RequestParam("page") @Min(0) int page,
         @RequestParam("size") @Min(1) @Max(50) int size
@@ -87,7 +88,7 @@ public class UserController {
         responses = {
             @ApiResponse(
                 responseCode = "200",
-                content = @Content(schema = @Schema(implementation = DeleteUserResponseDTO.class))
+                content = @Content(schema = @Schema(implementation = DeleteResponseDTO.class))
             ),
             @ApiResponse(
                 responseCode = "401",
@@ -96,12 +97,12 @@ public class UserController {
             )
         }
     )
-    public ResponseEntity<DeleteUserResponseDTO> deleteUserByName(@NotBlank @PathVariable String username) {
+    public ResponseEntity<DeleteResponseDTO> deleteUserByName(@NotBlank @PathVariable String username) {
         if (username == this.adminUsername) {
             throw new ProblemResponseException(HttpStatus.UNAUTHORIZED, "can't delete main admin user");
         }
         boolean deleted = this.users.deleteByName(username);
-        return ResponseEntity.ok(new DeleteUserResponseDTO(deleted));
+        return ResponseEntity.ok(new DeleteResponseDTO(deleted));
     }
 
     @GetMapping(value = "/by-name/{username}")

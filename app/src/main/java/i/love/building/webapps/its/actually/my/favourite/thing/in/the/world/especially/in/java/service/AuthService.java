@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.UserAlreadyExistsException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 
 @Service
@@ -18,10 +18,10 @@ public class AuthService {
         this.users = users;
     }
     
-    public User registerUser(String name, String plainPassword, User.Role role) throws UserAlreadyExistsException {
+    public User registerUser(String name, String plainPassword, User.Role role) throws AlreadyExistsException {
         Optional<User> existing = this.users.getByName(name);
         if (existing.isPresent()) {
-            throw new UserAlreadyExistsException(existing.get().getId(), name);
+            throw new AlreadyExistsException("user", existing.get().getName());
         }
         String salt = BCrypt.gensalt();
         String hashPassword = BCrypt.hashpw(plainPassword, salt);
