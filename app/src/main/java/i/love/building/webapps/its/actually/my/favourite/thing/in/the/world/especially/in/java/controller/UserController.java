@@ -38,6 +38,7 @@ public class UserController {
     @Value("#{environment.ADMIN_USERNAME}")
     private String adminUsername;
     
+    // TODO: Infinite scroll or smth from requirements?
     @GetMapping(value = "/", params = { "page", "size" })
     @Operation(
         responses = {
@@ -47,8 +48,6 @@ public class UserController {
             )
         }
     )
-
-    // TODO: Infinite scroll or smth from requirements?
     public ResponseEntity<List<UserDTO>> getUsers(
         @RequestParam("page") @Min(0) int page,
         @RequestParam("size") @Min(1) @Max(50) int size
@@ -82,7 +81,7 @@ public class UserController {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping(value = "/by-name/{username}")
+    @DeleteMapping(value = "/by-name/{userId}")
     @Operation(
         responses = {
             @ApiResponse(
@@ -101,36 +100,14 @@ public class UserController {
             )
         }
     )
-    public ResponseEntity<Void> deleteUserByName(@NotBlank @PathVariable String username) {
-        if (username == this.adminUsername) {
+    public ResponseEntity<Void> deleteUser(@NotBlank @PathVariable Long userId) {
+        boolean isAdmin = this.users.getById(userId)
+            .map(u -> u.getName() == this.adminUsername)
+            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "user with id '%d' not found", userId));
+        if (isAdmin) {
             throw new ProblemResponseException(HttpStatus.UNAUTHORIZED, "can't delete main admin user");
         }
-        boolean deleted = this.users.deleteByName(username);
-        if (deleted) {
-            return ResponseEntity.ok().build();
-        } else {
-            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "user with name '%s' not found", username);
-        }
-    }
-
-    @GetMapping(value = "/by-name/{username}")
-    @Operation(
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                content = @Content(schema = @Schema(implementation = UserDTO.class))
-            ),
-            @ApiResponse(
-                responseCode = "404",
-                description = "user by specified name was not found",
-                content = @Content()
-            )
-        }
-    )
-    public ResponseEntity<UserDTO> getUserByName(@NotBlank @PathVariable String username) {
-        return this.users.getByName(username)
-            .map(UserDTO::fromEntity)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.notFound().build());
+        this.users.deleteById(userId);
+        return ResponseEntity.ok().build();
     }
 }

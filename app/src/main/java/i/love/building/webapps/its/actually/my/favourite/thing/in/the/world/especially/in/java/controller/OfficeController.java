@@ -20,6 +20,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomCreateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeCreateRequestDTO;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeDetailedResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplace.WorkplaceCreateRequestDTO;
@@ -56,6 +57,7 @@ public class OfficeController {
         }
     )
     public ResponseEntity<OfficeDetailedResponseDTO> getOffice(@NotNull @PathVariable Long officeId) {
+        // TODO: Transaction
         Office office = this.offices.getById(officeId)
             .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "office with id %d not found", officeId));
         List<WorkplaceResponseDTO> workplaces = this.offices.getWorkplacesByOfficeId(officeId).stream()
@@ -66,6 +68,12 @@ public class OfficeController {
             .toList();
         var response = new OfficeDetailedResponseDTO(officeId, office.getName(), office.getMap(), meetingRooms, workplaces);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/")
+    public ResponseEntity<List<OfficeDTO>> getAllOffices() {
+        List<OfficeDTO> list = this.offices.getAll().stream().map(OfficeDTO::fromEntity).toList();
+        return ResponseEntity.ok(list);
     }
     
     @PostMapping(value = "/")
@@ -144,6 +152,7 @@ public class OfficeController {
         }
     )
     public ResponseEntity<Void> deleteOffice(@NotNull @PathVariable Long officeId) {
+        // TODO: Transaction
         this.offices.deleteMeetingRoomByOfficeId(officeId);
         this.offices.deleteWorkplacesByOfficeId(officeId);
         boolean deleted = this.offices.deleteOffice(officeId);
@@ -189,7 +198,7 @@ public class OfficeController {
             )
         }
     )
-    public ResponseEntity<Void> deleteOfficeByName(@NotNull @PathVariable Long meetingRoomId) {
+    public ResponseEntity<Void> deleteMeetingRoom(@NotNull @PathVariable Long meetingRoomId) {
         boolean deleted = this.offices.deleteMeetingRoom(meetingRoomId);
         if (!deleted) {
             throw new ProblemResponseException(HttpStatus.NOT_FOUND, "meeting room with id '%s' not found", meetingRoomId);

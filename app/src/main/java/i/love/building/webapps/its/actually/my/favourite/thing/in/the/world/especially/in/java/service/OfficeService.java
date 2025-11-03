@@ -39,6 +39,10 @@ public class OfficeService {
         return this.offices.save(office);
     }
 
+    public List<Office> getAll() {
+        return this.offices.findAll();
+    }
+
     public Optional<Workplace> getWorkplaceById(Long workplaceId) {
         return this.workplaces.findById(workplaceId);
     }
