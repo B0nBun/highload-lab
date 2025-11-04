@@ -36,6 +36,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+// TODO: Maybe separate meetingRoom/workplace controllers and services
+
 @RestController
 @RequestMapping(value = "/api/office")
 public class OfficeController {
@@ -57,7 +59,6 @@ public class OfficeController {
         }
     )
     public ResponseEntity<OfficeDetailedResponseDTO> getOffice(@NotNull @PathVariable Long officeId) {
-        // TODO: Transaction
         Office office = this.offices.getById(officeId)
             .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "office with id %d not found", officeId));
         List<WorkplaceResponseDTO> workplaces = this.offices.getWorkplacesByOfficeId(officeId).stream()
@@ -152,7 +153,6 @@ public class OfficeController {
         }
     )
     public ResponseEntity<Void> deleteOffice(@NotNull @PathVariable Long officeId) {
-        // TODO: Transaction
         this.offices.deleteMeetingRoomByOfficeId(officeId);
         this.offices.deleteWorkplacesByOfficeId(officeId);
         boolean deleted = this.offices.deleteOffice(officeId);

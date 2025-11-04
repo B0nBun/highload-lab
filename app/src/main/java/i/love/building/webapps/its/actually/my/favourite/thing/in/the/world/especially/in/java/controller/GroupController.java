@@ -28,7 +28,6 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-// TODO: Specify errors for OpenAPI
 @RestController
 @RequestMapping(value = "/api/group")
 public class GroupController {
@@ -59,7 +58,6 @@ public class GroupController {
         return ResponseEntity.ok(new GroupDetailedDTO(group.getId(), group.getName(), List.of(), List.of()));
     }
 
-    // TODO: Transaction
     @PostMapping(value = "/{groupId}/users")
     public ResponseEntity<GroupDetailedDTO> addUserToGroup(
         @NotNull @PathVariable Long groupId,
@@ -71,7 +69,6 @@ public class GroupController {
         return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
     }
 
-    // TODO: Transaction
     @DeleteMapping(value = "/{groupId}/users/{userId}")
     public ResponseEntity<GroupDetailedDTO> removeUserFromGroup(
         @NotNull @PathVariable Long groupId,
@@ -82,7 +79,6 @@ public class GroupController {
         return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
     }
 
-    // TODO: Transaction
     @PostMapping(value = "/{groupId}/offices")
     public ResponseEntity<GroupDetailedDTO> addOfficeToGroup(
         @NotNull @PathVariable Long groupId,
@@ -94,7 +90,6 @@ public class GroupController {
         return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
     }
 
-    // TODO: Transaction
     @DeleteMapping(value = "/{groupId}/offices/{officeId}")
     public ResponseEntity<GroupDetailedDTO> removeOfficeFromGroup(
         @NotNull @PathVariable Long groupId,

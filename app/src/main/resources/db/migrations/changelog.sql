@@ -57,13 +57,17 @@ create table workplace_booking (
     id serial primary key,
     workplace_id int references workplace(id),
     user_id int references users(id),
-    booked_date date
+    booked_date date,
+    unique (user_id, date)
 );
 
+-- TODO: may be possible to constraint time overlaps in psql
+--       but probably better to check it only in the code
 create table meeting_booking (
     id serial primary key,
     user_id int references users(id),
     meeting_room_id int references meeting_room(id),
     start_time timestamp,
-    end_time timestamp
+    end_time timestamp,
+    constraint start_before_end_check check ( end_time > start_time )
 );

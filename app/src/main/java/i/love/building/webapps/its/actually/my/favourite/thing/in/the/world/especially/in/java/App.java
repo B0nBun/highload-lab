@@ -9,6 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Hidden;
 
 
+// TODO: Check that deleting on all entities actually works
+//       (it may not without cascading)
+// TODO: Check that all unique constraints return correct HTTP statuses/responses
+// TODO: UPDATE method endpoints
+// TODO: Rename all fromEntity and fromModel to one thing
+// TODO: Specify OpenAPI documentation for endpoints with errors
+// TODO: Transactions
+
+
 @RestController
 @SpringBootApplication
 public class App {
