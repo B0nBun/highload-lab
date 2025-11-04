@@ -20,7 +20,7 @@
 
 - [ ] Основные сущности должны иметь осмысленный CRUD интерфейс с использованием REST API.
     * [x] user
-    * [ ] group
+    * [x] group
     * [x] office, meeting_room, workspace
     * [ ] booking 
 - [x] Использовать правильные http статусы для ответов.

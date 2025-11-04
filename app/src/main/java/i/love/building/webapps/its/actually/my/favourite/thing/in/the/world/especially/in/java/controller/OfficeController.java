@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.auth.RegisterRequestDTO;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.common.DeleteResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomCreateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeCreateRequestDTO;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeDetailedResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.office.OfficeResponseDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplace.WorkplaceCreateRequestDTO;
@@ -57,6 +57,7 @@ public class OfficeController {
         }
     )
     public ResponseEntity<OfficeDetailedResponseDTO> getOffice(@NotNull @PathVariable Long officeId) {
+        // TODO: Transaction
         Office office = this.offices.getById(officeId)
             .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "office with id %d not found", officeId));
         List<WorkplaceResponseDTO> workplaces = this.offices.getWorkplacesByOfficeId(officeId).stream()
@@ -67,6 +68,12 @@ public class OfficeController {
             .toList();
         var response = new OfficeDetailedResponseDTO(officeId, office.getName(), office.getMap(), meetingRooms, workplaces);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/")
+    public ResponseEntity<List<OfficeDTO>> getAllOffices() {
+        List<OfficeDTO> list = this.offices.getAll().stream().map(OfficeDTO::fromEntity).toList();
+        return ResponseEntity.ok(list);
     }
     
     @PostMapping(value = "/")
@@ -131,20 +138,71 @@ public class OfficeController {
     }
 
     @DeleteMapping(value = "/{officeId}")
-    public ResponseEntity<DeleteResponseDTO> deleteOffice(@NotNull @PathVariable Long officeId) {
+    @Operation(
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                content = @Content(schema = @Schema(implementation = Void.class))
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "office with specified id was not found",
+                content = @Content()
+            )
+        }
+    )
+    public ResponseEntity<Void> deleteOffice(@NotNull @PathVariable Long officeId) {
+        // TODO: Transaction
+        this.offices.deleteMeetingRoomByOfficeId(officeId);
+        this.offices.deleteWorkplacesByOfficeId(officeId);
         boolean deleted = this.offices.deleteOffice(officeId);
-        return ResponseEntity.ok(new DeleteResponseDTO(deleted));
+        if (!deleted) {
+            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "office with id '%s' not found", officeId);
+        }
+        return ResponseEntity.ok().build();
     }
     
     @DeleteMapping(value = "/workplace/{workplaceId}")
-    public ResponseEntity<DeleteResponseDTO> deleteWorkplace(@NotNull @PathVariable Long workplaceId) {
+    @Operation(
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                content = @Content(schema = @Schema(implementation = Void.class))
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "workplace with specified id was not found",
+                content = @Content()
+            )
+        }
+    )
+    public ResponseEntity<Void> deleteWorkplace(@NotNull @PathVariable Long workplaceId) {
         boolean deleted = this.offices.deleteWorkplace(workplaceId);
-        return ResponseEntity.ok(new DeleteResponseDTO(deleted));
+        if (!deleted) {
+            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "workplace with id '%s' not found", workplaceId);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/meeting-room/{meetingRoomId}")
-    public ResponseEntity<DeleteResponseDTO> deleteOfficeByName(@NotNull @PathVariable Long meetingRoomId) {
+    @Operation(
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                content = @Content(schema = @Schema(implementation = Void.class))
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "meeting room with specified id was not found",
+                content = @Content()
+            )
+        }
+    )
+    public ResponseEntity<Void> deleteMeetingRoom(@NotNull @PathVariable Long meetingRoomId) {
         boolean deleted = this.offices.deleteMeetingRoom(meetingRoomId);
-        return ResponseEntity.ok(new DeleteResponseDTO(deleted));
+        if (!deleted) {
+            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "meeting room with id '%s' not found", meetingRoomId);
+        }
+        return ResponseEntity.ok().build();
     }
 }

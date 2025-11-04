@@ -8,6 +8,7 @@ create table office (
 );
 
 create type audio_equipment_state as enum ('absent', 'headset', 'speakers');
+create cast (character varying as audio_equipment_state) with inout as implicit;  
 
 create table workplace (
     id serial primary key,
@@ -23,15 +24,16 @@ create table meeting_room (
     capacity integer not null
 );
 
-create table userset (
+create table groups (
     id serial primary key,
-    name varchar(255) not null
+    name varchar(255) unique not null check (name <> '')
 );
 
-create table userset_office_rel (
+create table groups_office_rel (
     id serial primary key,
-    userset_id int references userset(id),
-    office_id int references office(id)
+    groups_id int references groups(id),
+    office_id int references office(id),
+    unique (groups_id, office_id)
 );
 
 create type user_role as enum ('admin', 'supervisor', 'regular', 'infrequent');
@@ -44,10 +46,11 @@ create table users (
     role user_role not null
 );
 
-create table user_userset_rel (
+create table user_groups_rel (
     id serial primary key,
     user_id int references users(id),
-    userset_id int references userset(id)
+    groups_id int references groups(id),
+    unique (user_id, groups_id)
 );
 
 create table workplace_booking (

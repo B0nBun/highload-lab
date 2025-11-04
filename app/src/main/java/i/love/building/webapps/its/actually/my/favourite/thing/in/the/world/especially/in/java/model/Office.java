@@ -1,10 +1,14 @@
 package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,6 +24,9 @@ public class Office {
 
     @Column(name = "map", nullable = true)
     private byte[] map;
+
+    @ManyToMany(mappedBy = "offices")
+    private List<Group> groups = new ArrayList<>();
 
     public Office() {}
     
