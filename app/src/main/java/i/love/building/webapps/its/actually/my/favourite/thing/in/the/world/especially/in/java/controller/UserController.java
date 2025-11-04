@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.Headers;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.Headers;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.UserDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
