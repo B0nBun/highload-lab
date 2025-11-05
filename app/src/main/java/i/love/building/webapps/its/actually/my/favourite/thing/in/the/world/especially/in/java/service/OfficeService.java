@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Office;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
@@ -14,6 +15,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.MeetingRoomRepository;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.OfficeRepository;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.WorkplaceRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class OfficeService {
@@ -28,6 +30,17 @@ public class OfficeService {
 
     public Optional<Office> getById(Long id) {
         return this.offices.findById(id);
+    }
+
+    @Transactional
+    public Optional<OfficeDetailed> getByIdDetailed(Long id) {
+        Optional<Office> office = this.offices.findById(id);
+        if (office.isEmpty()) {
+            return Optional.empty();
+        }
+        List<Workplace> workplaces = this.workplaces.findByOfficeId(id);
+        List<MeetingRoom> meetingRooms = this.meetingRooms.findByOfficeId(id);
+        return Optional.of(new OfficeDetailed(office.get(), workplaces, meetingRooms));
     }
 
     public Office create(String name, byte[] map) throws AlreadyExistsException {
@@ -59,20 +72,18 @@ public class OfficeService {
         return this.meetingRooms.findByOfficeId(officeId);
     }
 
-    public void deleteMeetingRoomByOfficeId(Long officeId) {
-        this.meetingRooms.deleteByOfficeId(officeId);
-    }
-
-    public void deleteWorkplacesByOfficeId(Long officeId) {
-        this.workplaces.deleteByOfficeId(officeId);
-    }
-
-    public Workplace createWorkplace(Office office, Long monitors, AudioEquipmentState audioEquipment) {
+    @Transactional
+    public Workplace createWorkplace(Long officeId, Long monitors, AudioEquipmentState audioEquipment) throws ObjectNotFoundException {
+        Office office = this.offices.findById(officeId)
+            .orElseThrow(() -> new ObjectNotFoundException("office with id '%d'", officeId));
         var workplace = new Workplace(office, monitors, audioEquipment);
         return this.workplaces.save(workplace);
     }
 
-    public MeetingRoom createMeetingRoom(Office office, boolean remoteAvaialable, Long capacity) {
+    @Transactional
+    public MeetingRoom createMeetingRoom(Long officeId, boolean remoteAvaialable, Long capacity) throws ObjectNotFoundException {
+        Office office = this.offices.findById(officeId)
+            .orElseThrow(() -> new ObjectNotFoundException("office with id '%d'", officeId));
         var meetingRoom = new MeetingRoom(office, remoteAvaialable, capacity);
         return this.meetingRooms.save(meetingRoom);
     }
@@ -86,6 +97,14 @@ public class OfficeService {
     }
 
     public boolean deleteOffice(Long officeId) {
+        this.meetingRooms.deleteByOfficeId(officeId);
+        this.workplaces.deleteByOfficeId(officeId);
         return this.offices.deleteByIdReturning(officeId) > 0;
     }
+
+    public static record OfficeDetailed(
+        Office office,
+        List<Workplace> workplaces,
+        List<MeetingRoom> meetingRooms
+    ) {}
 }

@@ -3,7 +3,6 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.Headers;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.CannotDeleteAdminException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.UserDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +34,6 @@ import jakarta.validation.constraints.NotNull;
 public class UserController {
     @Autowired
     private UserService users;
-
-    @Value("#{environment.ADMIN_USERNAME}")
-    private String adminUsername;
     
     // TODO: Infinite scroll or smth from requirements?
     @GetMapping(value = "/", params = { "page", "size" })
@@ -101,13 +98,11 @@ public class UserController {
         }
     )
     public ResponseEntity<Void> deleteUser(@NotBlank @PathVariable Long userId) {
-        boolean isAdmin = this.users.getById(userId)
-            .map(u -> u.getName() == this.adminUsername)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "user with id '%d' not found", userId));
-        if (isAdmin) {
+        try {
+            this.users.deleteById(userId);
+            return ResponseEntity.ok().build();
+        } catch (CannotDeleteAdminException e) {
             throw new ProblemResponseException(HttpStatus.UNAUTHORIZED, "can't delete main admin user");
         }
-        this.users.deleteById(userId);
-        return ResponseEntity.ok().build();
     }
 }

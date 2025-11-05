@@ -8,17 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.BookingInPastException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceAlreadyTakenException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceUserAlreadyBookedException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.WorkplaceBooking;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.WorkplaceBookingRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class WorkplaceBookingService {
     @Autowired
     private WorkplaceBookingRepository workplaceBookings;
+    @Autowired
+    private OfficeService office;
+    @Autowired
+    private UserService user;
 
     public List<WorkplaceBooking> getByWorkplaceId(Long workplaceId) {
         return this.workplaceBookings.findByWorkplaceId(workplaceId);
@@ -37,15 +43,16 @@ public class WorkplaceBookingService {
         return updated > 0;
     }
 
+    @Transactional
     public WorkplaceBooking create(
-        Workplace workplace,
-        User user,
+        Long workplaceId,
+        Long userId,
         LocalDate bookedDate
-    ) throws WorkplaceUserAlreadyBookedException, BookingInPastException, WorkplaceAlreadyTakenException {
+    ) throws WorkplaceUserAlreadyBookedException, BookingInPastException, WorkplaceAlreadyTakenException, ObjectNotFoundException {
         if (bookedDate.isBefore(LocalDate.now())) {
             throw new BookingInPastException();
         }
-        Optional<WorkplaceBooking> conflict = this.workplaceBookings.findByUserIdAndDate(user.getId(), bookedDate);
+        Optional<WorkplaceBooking> conflict = this.workplaceBookings.findByUserIdAndDate(userId, bookedDate);
         if (conflict.isPresent()) {
             WorkplaceBooking booking = conflict.get();
             throw new WorkplaceUserAlreadyBookedException(
@@ -54,10 +61,14 @@ public class WorkplaceBookingService {
                 booking.getWorkplace().getId()
             );
         }
-        conflict = this.workplaceBookings.findByWorkplaceAndDate(workplace.getId(), bookedDate);
+        conflict = this.workplaceBookings.findByWorkplaceAndDate(workplaceId, bookedDate);
         if (conflict.isPresent()) {
-            throw new WorkplaceAlreadyTakenException(bookedDate, conflict.get().getUser().getId(), workplace.getId());
+            throw new WorkplaceAlreadyTakenException(bookedDate, conflict.get().getUser().getId(), workplaceId);
         }
+        Workplace workplace = this.office.getWorkplaceById(workplaceId)
+            .orElseThrow(() -> new ObjectNotFoundException("workplace with id '%d'", workplaceId));
+        User user = this.user.getById(userId)
+            .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", userId));
         var booking = new WorkplaceBooking(workplace, user, bookedDate);
         this.workplaceBookings.save(booking);
         return booking;

@@ -15,8 +15,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 // TODO: UPDATE method endpoints
 // TODO: Rename all fromEntity and fromModel to one thing
 // TODO: Specify OpenAPI documentation for endpoints with errors
-// TODO: Transactions
-
+// TODO: Formatter (any maybe CI)
 
 @RestController
 @SpringBootApplication

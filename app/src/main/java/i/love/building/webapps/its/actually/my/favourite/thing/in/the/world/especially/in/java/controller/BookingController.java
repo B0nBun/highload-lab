@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.BookingInPastException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomConflictException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceAlreadyTakenException;
@@ -22,10 +23,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroombooking.MeetingRoomBookingDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplacebooking.WorkplaceBookingCreateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplacebooking.WorkplaceBookingDTO;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoomBooking;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.WorkplaceBooking;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.MeetingRoomBookingService;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.OfficeService;
@@ -69,18 +67,19 @@ public class BookingController {
     public ResponseEntity<MeetingRoomBookingDTO> getMeeetingRoomBooking(
         @PathVariable @NotNull Long bookingId
     ) {
-        MeetingRoomBooking booking = this.getMeetingRoomBookingOrThrow(bookingId);
-        return ResponseEntity.ok(MeetingRoomBookingDTO.fromEntity(booking));
+        return this.meetingRoomBookings.getById(bookingId)
+            .map(MeetingRoomBookingDTO::fromEntity)
+            .map(ResponseEntity::ok)
+            .orElseThrow(() -> new ObjectNotFoundException("meeting room booking with id '%d'", bookingId).responseException());
     }
 
     @PostMapping(value = "/meeting-room")
     public ResponseEntity<MeetingRoomBookingDTO> createMeetingRoomBooking(
         @Valid @RequestBody MeetingRoomBookingCreateRequestDTO req
     ) {
-        MeetingRoom room = this.getMeetingRoomOrThrow(req.meetingRoomId());
-        User user = this.getUserOrThrow(req.userId());
         try {
-            MeetingRoomBooking booking = this.meetingRoomBookings.create(room, user, req.startTime(), req.endTime());
+            MeetingRoomBooking booking = this.meetingRoomBookings
+                .create(req.meetingRoomId(), req.userId(), req.startTime(), req.endTime());
             return ResponseEntity.ok(MeetingRoomBookingDTO.fromEntity(booking));
         } catch (MeetingRoomConflictException e) {
             throw new ProblemResponseException(
@@ -95,6 +94,8 @@ public class BookingController {
                 HttpStatus.BAD_REQUEST,
                 "can't booking meeting room in the past"
             );
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
         }
     }
 
@@ -104,7 +105,7 @@ public class BookingController {
     ) {
         boolean deleted = this.meetingRoomBookings.deleteById(bookingId);
         if (!deleted) {
-            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "meeting room booking with id '%d' not found", bookingId);
+            throw new ObjectNotFoundException("meeting room booking with id '%d'", bookingId).responseException();
         }
         return ResponseEntity.ok().build();
     }
@@ -129,18 +130,18 @@ public class BookingController {
     public ResponseEntity<WorkplaceBookingDTO> getWorkplaceBooking(
         @PathVariable @NotNull Long bookingId
     ) {
-        WorkplaceBooking booking = this.getWorkplaceBookingOrThrow(bookingId);
-        return ResponseEntity.ok(WorkplaceBookingDTO.fromEntity(booking));
+        return this.workplaceBookings.getById(bookingId)
+            .map(WorkplaceBookingDTO::fromEntity)
+            .map(ResponseEntity::ok)
+            .orElseThrow(() -> new ObjectNotFoundException("workplace booking with id '%d'", bookingId).responseException());
     }
     
     @PostMapping(value = "/workplace")
     public ResponseEntity<WorkplaceBookingDTO> createWorkplaceBooking(
         @Valid @RequestBody WorkplaceBookingCreateRequestDTO req
     ) {
-        Workplace workplace = this.getWorkplaceOrThrow(req.workplaceId());
-        User user = this.getUserOrThrow(req.userId());
         try {
-            WorkplaceBooking booking = this.workplaceBookings.create(workplace, user, req.bookedDate());
+            WorkplaceBooking booking = this.workplaceBookings.create(req.workplaceId(), req.userId(), req.bookedDate());
             return ResponseEntity.ok(WorkplaceBookingDTO.fromEntity(booking));
         } catch (WorkplaceUserAlreadyBookedException e) {
             throw new ProblemResponseException(
@@ -160,6 +161,8 @@ public class BookingController {
             );
         } catch (BookingInPastException e) {
             throw new ProblemResponseException(HttpStatus.BAD_REQUEST, "can't book workplace in the past");
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
         }
     }
 
@@ -169,33 +172,8 @@ public class BookingController {
     ) {
         boolean deleted = this.workplaceBookings.deleteById(bookingId);
         if (!deleted) {
-            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "workplace booking with id '%d' not found", bookingId);
+            throw new ObjectNotFoundException("workplace booking with id '%d'", bookingId).responseException();
         }
         return ResponseEntity.ok().build();
-    }
-
-    private MeetingRoomBooking getMeetingRoomBookingOrThrow(Long id) {
-        return this.meetingRoomBookings.getById(id)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "meeting room booking with id '%d' not found", id));
-    }
-
-    private WorkplaceBooking getWorkplaceBookingOrThrow(Long id) {
-        return this.workplaceBookings.getById(id)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "workplace booking with id '%d' not found", id));
-    }
-
-    private MeetingRoom getMeetingRoomOrThrow(Long id) {
-        return this.office.getMeetingRoomById(id)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "meeting room with id '%d' not found", id));
-    }
-
-    private Workplace getWorkplaceOrThrow(Long id) {
-        return this.office.getWorkplaceById(id)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "workplace with id '%d' not found", id));
-    }
-
-    private User getUserOrThrow(Long id) {
-        return this.users.getById(id)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "user with id '%d' not found", id));
     }
 }

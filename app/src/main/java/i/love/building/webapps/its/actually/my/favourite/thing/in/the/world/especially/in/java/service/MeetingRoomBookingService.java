@@ -9,16 +9,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.BookingInPastException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.NotFoundResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomConflictException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoomBooking;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.MeetingRoomBookingRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class MeetingRoomBookingService {
     @Autowired
     private MeetingRoomBookingRepository meetingRoomBookings;
+    @Autowired
+    private UserService users;
+    @Autowired
+    private OfficeService office;
 
     public List<MeetingRoomBooking> getByMeetingRoomId(Long meetinRoomId) {
         return this.meetingRoomBookings.findByMeetingRoomId(meetinRoomId);
@@ -37,13 +43,19 @@ public class MeetingRoomBookingService {
         return updated > 0;
     }
 
-    public MeetingRoomBooking create(MeetingRoom room, User user, Instant startTime, Instant endTime) throws MeetingRoomConflictException, BookingInPastException {
+    @Transactional
+    public MeetingRoomBooking create(
+        Long meetingRoomId,
+        Long userId,
+        Instant startTime,
+        Instant endTime
+    ) throws BookingInPastException, MeetingRoomConflictException, NotFoundResponseException {
         Instant now = Instant.now();
         if (endTime.isBefore(now) || startTime.isBefore(now)) {
             throw new BookingInPastException();
         }
         Optional<MeetingRoomBooking> conflict = this.meetingRoomBookings.findByRoomAndOverlap(
-            room.getId(),
+            meetingRoomId,
             Timestamp.from(startTime),
             Timestamp.from(endTime)
         );
@@ -55,6 +67,10 @@ public class MeetingRoomBookingService {
                 booking.getEndTime().toInstant()
             );
         }
+        User user = this.users.getById(userId)
+            .orElseThrow(() -> new NotFoundResponseException("user with id '%d'", userId));
+        MeetingRoom room = this.office.getMeetingRoomById(meetingRoomId)
+            .orElseThrow(() -> new NotFoundResponseException("meeting room with id '%d'", meetingRoomId));
         var booking = new MeetingRoomBooking(room, user, Timestamp.from(startTime), Timestamp.from(endTime));
         this.meetingRoomBookings.save(booking);
         return booking;

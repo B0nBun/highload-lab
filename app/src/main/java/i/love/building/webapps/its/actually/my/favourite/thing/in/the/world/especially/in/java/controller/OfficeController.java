@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.auth.RegisterRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomCreateRequestDTO;
@@ -59,16 +60,10 @@ public class OfficeController {
         }
     )
     public ResponseEntity<OfficeDetailedResponseDTO> getOffice(@NotNull @PathVariable Long officeId) {
-        Office office = this.offices.getById(officeId)
-            .orElseThrow(() -> new ProblemResponseException(HttpStatus.NOT_FOUND, "office with id %d not found", officeId));
-        List<WorkplaceResponseDTO> workplaces = this.offices.getWorkplacesByOfficeId(officeId).stream()
-            .map(WorkplaceResponseDTO::fromModel)
-            .toList();
-        List<MeetingRoomResponseDTO> meetingRooms = this.offices.getMeetingRoomsByOfficeId(officeId).stream()
-            .map(MeetingRoomResponseDTO::fromModel)
-            .toList();
-        var response = new OfficeDetailedResponseDTO(officeId, office.getName(), office.getMap(), meetingRooms, workplaces);
-        return ResponseEntity.ok(response);
+        return this.offices.getByIdDetailed(officeId)
+            .map(OfficeDetailedResponseDTO::fromModel)
+            .map(ResponseEntity::ok)
+            .orElseThrow(() -> new ObjectNotFoundException("office with id '%d'", officeId).responseException());
     }
 
     @GetMapping(value = "/")
@@ -111,15 +106,12 @@ public class OfficeController {
         @NotNull @PathVariable Long officeId,
         @Valid @RequestBody WorkplaceCreateRequestDTO req
     ) {
-        Office office = this.offices.getById(officeId)
-            .orElseThrow(
-                () -> new ProblemResponseException(
-                    HttpStatus.BAD_REQUEST,
-                    "office with id %d does not exist", officeId
-                )
-            );
-        Workplace workplace = this.offices.createWorkplace(office, req.monitors(), req.audioEquipment());
-        return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
+        try {
+            Workplace workplace = this.offices.createWorkplace(officeId, req.monitors(), req.audioEquipment());
+            return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @PostMapping(value = "/{officeId}/meeting-room")
@@ -127,15 +119,12 @@ public class OfficeController {
         @NotNull @PathVariable Long officeId,
         @Valid @RequestBody MeetingRoomCreateRequestDTO req
     ) {
-        Office office = this.offices.getById(officeId)
-            .orElseThrow(
-                () -> new ProblemResponseException(
-                    HttpStatus.BAD_REQUEST,
-                    "office with id %d does not exist", officeId
-                )
-            );
-        MeetingRoom meetingRoom = this.offices.createMeetingRoom(office, req.remoteAvaialable(), req.capacity());
-        return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
+        try {
+            MeetingRoom meetingRoom = this.offices.createMeetingRoom(officeId, req.remoteAvaialable(), req.capacity());
+            return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @DeleteMapping(value = "/{officeId}")
@@ -153,11 +142,9 @@ public class OfficeController {
         }
     )
     public ResponseEntity<Void> deleteOffice(@NotNull @PathVariable Long officeId) {
-        this.offices.deleteMeetingRoomByOfficeId(officeId);
-        this.offices.deleteWorkplacesByOfficeId(officeId);
         boolean deleted = this.offices.deleteOffice(officeId);
         if (!deleted) {
-            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "office with id '%s' not found", officeId);
+            throw new ObjectNotFoundException("office with id '%d'", officeId).responseException();
         }
         return ResponseEntity.ok().build();
     }
@@ -179,7 +166,7 @@ public class OfficeController {
     public ResponseEntity<Void> deleteWorkplace(@NotNull @PathVariable Long workplaceId) {
         boolean deleted = this.offices.deleteWorkplace(workplaceId);
         if (!deleted) {
-            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "workplace with id '%s' not found", workplaceId);
+            throw new ObjectNotFoundException("workplace with id '%d'", workplaceId).responseException();
         }
         return ResponseEntity.ok().build();
     }
@@ -201,7 +188,7 @@ public class OfficeController {
     public ResponseEntity<Void> deleteMeetingRoom(@NotNull @PathVariable Long meetingRoomId) {
         boolean deleted = this.offices.deleteMeetingRoom(meetingRoomId);
         if (!deleted) {
-            throw new ProblemResponseException(HttpStatus.NOT_FOUND, "meeting room with id '%s' not found", meetingRoomId);
+            throw new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId).responseException();
         }
         return ResponseEntity.ok().build();
     }

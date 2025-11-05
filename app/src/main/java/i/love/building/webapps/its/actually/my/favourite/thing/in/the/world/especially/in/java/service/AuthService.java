@@ -19,10 +19,6 @@ public class AuthService {
     }
     
     public User registerUser(String name, String plainPassword, User.Role role) throws AlreadyExistsException {
-        Optional<User> existing = this.users.getByName(name);
-        if (existing.isPresent()) {
-            throw new AlreadyExistsException("user", existing.get().getName());
-        }
         String salt = BCrypt.gensalt();
         String hashPassword = BCrypt.hashpw(plainPassword, salt);
         User user = new User(name, hashPassword, role);

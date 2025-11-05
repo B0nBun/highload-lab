@@ -53,7 +53,7 @@ public class AuthController {
             return ResponseEntity.ok(RegisterResponseDTO.fromModel(user));
         } catch (AlreadyExistsException ex) {
             throw new ProblemResponseException(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.CONFLICT,
                 ex,
                 "user '%s' already exists", ex.getIdentifier()
             );
