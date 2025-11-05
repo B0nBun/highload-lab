@@ -54,8 +54,12 @@ public class GroupController {
         @NotNull @PathVariable Long groupId,
         @Valid @RequestBody GroupAddUserRequestDTO req
     ) {
-        Group group = this.groups.addUserToGroup(groupId, req.userId());
-        return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        try {
+            Group group = this.groups.addUserToGroup(groupId, req.userId());
+            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @DeleteMapping(value = "/{groupId}/users/{userId}")
@@ -63,8 +67,12 @@ public class GroupController {
         @NotNull @PathVariable Long groupId,
         @NotNull @PathVariable Long userId
     ) {
-        Group group = this.groups.removeUserFromGroup(groupId, userId);
-        return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        try {
+            Group group = this.groups.removeUserFromGroup(groupId, userId);
+            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @PostMapping(value = "/{groupId}/offices")
@@ -72,8 +80,12 @@ public class GroupController {
         @NotNull @PathVariable Long groupId,
         @Valid @RequestBody GroupAddOfficeRequestDTO req
     ) {
-        Group group = this.groups.addOfficeToGroup(groupId, req.officeId());
-        return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        try {
+            Group group = this.groups.addOfficeToGroup(groupId, req.officeId());
+            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @DeleteMapping(value = "/{groupId}/offices/{officeId}")
@@ -81,7 +93,11 @@ public class GroupController {
         @NotNull @PathVariable Long groupId,
         @NotNull @PathVariable Long officeId
     ) {
-        Group group = this.groups.removeOfficeFromGroup(groupId, officeId);
-        return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        try {
+            Group group = this.groups.removeOfficeFromGroup(groupId, officeId);
+            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.Headers;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.CannotDeleteAdminException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.UserDTO;
@@ -103,6 +104,8 @@ public class UserController {
             return ResponseEntity.ok().build();
         } catch (CannotDeleteAdminException e) {
             throw new ProblemResponseException(HttpStatus.UNAUTHORIZED, "can't delete main admin user");
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
         }
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.BookingInPastException;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.NotFoundResponseException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomConflictException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoomBooking;
@@ -49,7 +49,7 @@ public class MeetingRoomBookingService {
         Long userId,
         Instant startTime,
         Instant endTime
-    ) throws BookingInPastException, MeetingRoomConflictException, NotFoundResponseException {
+    ) throws BookingInPastException, MeetingRoomConflictException, ObjectNotFoundException {
         Instant now = Instant.now();
         if (endTime.isBefore(now) || startTime.isBefore(now)) {
             throw new BookingInPastException();
@@ -68,9 +68,9 @@ public class MeetingRoomBookingService {
             );
         }
         User user = this.users.getById(userId)
-            .orElseThrow(() -> new NotFoundResponseException("user with id '%d'", userId));
+            .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", userId));
         MeetingRoom room = this.office.getMeetingRoomById(meetingRoomId)
-            .orElseThrow(() -> new NotFoundResponseException("meeting room with id '%d'", meetingRoomId));
+            .orElseThrow(() -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId));
         var booking = new MeetingRoomBooking(room, user, Timestamp.from(startTime), Timestamp.from(endTime));
         this.meetingRoomBookings.save(booking);
         return booking;

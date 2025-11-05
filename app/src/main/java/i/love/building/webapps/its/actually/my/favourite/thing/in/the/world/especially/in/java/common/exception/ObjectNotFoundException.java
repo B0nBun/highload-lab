@@ -2,14 +2,14 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 
 import org.springframework.http.HttpStatus;
 
-public class NotFoundResponseException extends Exception {
+public class ObjectNotFoundException extends Exception {
     String object;
     
-    public NotFoundResponseException(String object) {
+    public ObjectNotFoundException(String object) {
         this.object = object;
     }
 
-    public NotFoundResponseException(String fmt, Object... args) {
+    public ObjectNotFoundException(String fmt, Object... args) {
         this.object = String.format(fmt, args);
     }
 
