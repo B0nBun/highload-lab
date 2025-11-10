@@ -2,7 +2,4 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 
 import jakarta.validation.constraints.NotNull;
 
-public record GroupAddUserRequestDTO(
-    @NotNull
-    Long userId
-){}
+public record GroupAddUserRequestDTO(@NotNull Long userId) {}

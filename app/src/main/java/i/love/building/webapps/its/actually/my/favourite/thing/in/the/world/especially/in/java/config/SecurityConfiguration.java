@@ -7,12 +7,20 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfiguration {
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.
-            httpBasic(sec -> { sec.disable(); }).
-            authorizeHttpRequests(sec -> { sec.anyRequest().permitAll(); }).
-            csrf(sec -> { sec.disable(); }).
-            build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http.httpBasic(
+            sec -> {
+              sec.disable();
+            })
+        .authorizeHttpRequests(
+            sec -> {
+              sec.anyRequest().permitAll();
+            })
+        .csrf(
+            sec -> {
+              sec.disable();
+            })
+        .build();
+  }
 }

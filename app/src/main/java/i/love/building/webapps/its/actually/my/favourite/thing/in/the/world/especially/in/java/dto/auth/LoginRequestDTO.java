@@ -2,9 +2,4 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequestDTO (
-    @NotBlank
-    String username,
-    @NotBlank
-    String plainPassword
-){}
+public record LoginRequestDTO(@NotBlank String username, @NotBlank String plainPassword) {}

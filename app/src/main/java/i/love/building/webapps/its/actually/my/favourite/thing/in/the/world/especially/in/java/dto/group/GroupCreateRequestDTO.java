@@ -2,7 +2,4 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 
 import jakarta.validation.constraints.NotBlank;
 
-public record GroupCreateRequestDTO(
-    @NotBlank
-    String name
-) {}
+public record GroupCreateRequestDTO(@NotBlank String name) {}

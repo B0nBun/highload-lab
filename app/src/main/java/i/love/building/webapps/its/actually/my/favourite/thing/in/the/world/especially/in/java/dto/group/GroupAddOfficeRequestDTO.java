@@ -2,7 +2,4 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 
 import jakarta.validation.constraints.NotNull;
 
-public record GroupAddOfficeRequestDTO (
-    @NotNull
-    Long officeId
-) {}
+public record GroupAddOfficeRequestDTO(@NotNull Long officeId) {}

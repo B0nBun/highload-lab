@@ -13,42 +13,42 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "meeting_room")
 public class MeetingRoom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @JoinColumn(name = "office_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Office office;
+  @JoinColumn(name = "office_id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Office office;
 
-    @Column(name = "remote_available", nullable = false)
-    private boolean remoteAvaialable;
+  @Column(name = "remote_available", nullable = false)
+  private boolean remoteAvaialable;
 
-    @Column(name = "capacity", nullable = false)
-    private Long capacity;
+  @Column(name = "capacity", nullable = false)
+  private Long capacity;
 
-    public MeetingRoom() {}
+  public MeetingRoom() {}
 
-    public MeetingRoom(Office office, boolean remoteAvaialable, Long capacity) {
-        this.office = office;
-        this.remoteAvaialable = remoteAvaialable;
-        this.capacity = capacity;
-    }
+  public MeetingRoom(Office office, boolean remoteAvaialable, Long capacity) {
+    this.office = office;
+    this.remoteAvaialable = remoteAvaialable;
+    this.capacity = capacity;
+  }
 
-    public Long getId() {
-        return this.id;
-    }
+  public Long getId() {
+    return this.id;
+  }
 
-    public Office getOffice() {
-        return this.office;
-    }
+  public Office getOffice() {
+    return this.office;
+  }
 
-    public boolean getRemoteAvailable() {
-        return this.remoteAvaialable;
-    }
+  public boolean getRemoteAvailable() {
+    return this.remoteAvaialable;
+  }
 
-    public Long getCapacity() {
-        return this.capacity;
-    }
+  public Long getCapacity() {
+    return this.capacity;
+  }
 }
