@@ -9,14 +9,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface OfficeRepository extends JpaRepository<Office, Long> {
-  @Query("select o from Office o where o.id = :id")
-  Optional<Office> findById(@Param("id") Long id);
+    @Query("select o from Office o where o.id = :id")
+    Optional<Office> findById(@Param("id") Long id);
 
-  @Query("select o from Office o where o.name = :name")
-  Optional<Office> findByName(@Param("name") String name);
+    @Query("select o from Office o where o.name = :name")
+    Optional<Office> findByName(@Param("name") String name);
 
-  @Transactional
-  @Modifying
-  @Query("delete Office o where o.id = :id")
-  int deleteByIdReturning(@Param("id") Long id);
+    @Transactional
+    @Modifying
+    @Query("delete Office o where o.id = :id")
+    int deleteByIdReturning(@Param("id") Long id);
 }

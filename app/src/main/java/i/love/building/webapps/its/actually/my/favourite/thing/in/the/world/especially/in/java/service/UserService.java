@@ -16,50 +16,50 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-  @Value("#{environment.ADMIN_USERNAME}")
-  private String adminUsername;
+    @Value("#{environment.ADMIN_USERNAME}")
+    private String adminUsername;
 
-  @Autowired private UserRepository users;
+    @Autowired private UserRepository users;
 
-  @Transactional
-  public Pair<Long, List<User>> getUsers(Pageable pageable) {
-    Long count = this.users.count();
-    return Pair.of(count, this.users.findAll(pageable).toList());
-  }
-
-  public Optional<User> getById(Long id) {
-    return this.users.findById(id);
-  }
-
-  public Optional<User> getByName(String name) {
-    return this.users.findByName(name);
-  }
-
-  @Transactional
-  public User create(User user) throws AlreadyExistsException {
-    Optional<User> existing = this.users.findByName(user.getName());
-    if (existing.isPresent()) {
-      throw new AlreadyExistsException("user", existing.get().getName());
+    @Transactional
+    public Pair<Long, List<User>> getUsers(Pageable pageable) {
+        Long count = this.users.count();
+        return Pair.of(count, this.users.findAll(pageable).toList());
     }
-    return this.users.save(user);
-  }
 
-  public boolean updateUserPasswordHash(Long id, String passwordHash) {
-    int updated = this.users.updatePasswordHash(id, passwordHash);
-    return updated > 0;
-  }
-
-  @Transactional
-  public boolean deleteById(Long id) throws CannotDeleteAdminException, ObjectNotFoundException {
-    boolean isAdmin =
-        this.users
-            .findById(id)
-            .map(u -> u.getName() == this.adminUsername)
-            .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", id));
-    if (isAdmin) {
-      throw new CannotDeleteAdminException();
+    public Optional<User> getById(Long id) {
+        return this.users.findById(id);
     }
-    int updated = this.users.deleteByIdReturning(id);
-    return updated > 0;
-  }
+
+    public Optional<User> getByName(String name) {
+        return this.users.findByName(name);
+    }
+
+    @Transactional
+    public User create(User user) throws AlreadyExistsException {
+        Optional<User> existing = this.users.findByName(user.getName());
+        if (existing.isPresent()) {
+            throw new AlreadyExistsException("user", existing.get().getName());
+        }
+        return this.users.save(user);
+    }
+
+    public boolean updateUserPasswordHash(Long id, String passwordHash) {
+        int updated = this.users.updatePasswordHash(id, passwordHash);
+        return updated > 0;
+    }
+
+    @Transactional
+    public boolean deleteById(Long id) throws CannotDeleteAdminException, ObjectNotFoundException {
+        boolean isAdmin =
+                this.users
+                        .findById(id)
+                        .map(u -> u.getName() == this.adminUsername)
+                        .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", id));
+        if (isAdmin) {
+            throw new CannotDeleteAdminException();
+        }
+        int updated = this.users.deleteByIdReturning(id);
+        return updated > 0;
+    }
 }

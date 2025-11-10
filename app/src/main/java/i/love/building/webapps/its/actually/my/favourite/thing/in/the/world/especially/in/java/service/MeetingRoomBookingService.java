@@ -17,55 +17,61 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MeetingRoomBookingService {
-  @Autowired private MeetingRoomBookingRepository meetingRoomBookings;
-  @Autowired private UserService users;
-  @Autowired private MeetingRoomService meetingRooms;
+    @Autowired private MeetingRoomBookingRepository meetingRoomBookings;
+    @Autowired private UserService users;
+    @Autowired private MeetingRoomService meetingRooms;
 
-  public List<MeetingRoomBooking> getByMeetingRoomId(Long meetinRoomId) {
-    return this.meetingRoomBookings.findByMeetingRoomId(meetinRoomId);
-  }
-
-  public List<MeetingRoomBooking> getByUserId(Long userId) {
-    return this.meetingRoomBookings.findByUserId(userId);
-  }
-
-  public Optional<MeetingRoomBooking> getById(Long id) {
-    return this.meetingRoomBookings.findById(id);
-  }
-
-  public boolean deleteById(Long id) {
-    int updated = this.meetingRoomBookings.deleteByIdReturning(id);
-    return updated > 0;
-  }
-
-  @Transactional
-  public MeetingRoomBooking create(
-      Long meetingRoomId, Long userId, Instant startTime, Instant endTime)
-      throws BookingInPastException, MeetingRoomConflictException, ObjectNotFoundException {
-    Instant now = Instant.now();
-    if (endTime.isBefore(now) || startTime.isBefore(now)) {
-      throw new BookingInPastException();
+    public List<MeetingRoomBooking> getByMeetingRoomId(Long meetinRoomId) {
+        return this.meetingRoomBookings.findByMeetingRoomId(meetinRoomId);
     }
-    Optional<MeetingRoomBooking> conflict =
-        this.meetingRoomBookings.findByRoomAndOverlap(
-            meetingRoomId, Timestamp.from(startTime), Timestamp.from(endTime));
-    if (conflict.isPresent()) {
-      MeetingRoomBooking booking = conflict.get();
-      throw new MeetingRoomConflictException(
-          booking.getId(), booking.getStartTime().toInstant(), booking.getEndTime().toInstant());
+
+    public List<MeetingRoomBooking> getByUserId(Long userId) {
+        return this.meetingRoomBookings.findByUserId(userId);
     }
-    User user =
-        this.users
-            .getById(userId)
-            .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", userId));
-    MeetingRoom room =
-        this.meetingRooms
-            .getById(meetingRoomId)
-            .orElseThrow(
-                () -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId));
-    var booking =
-        new MeetingRoomBooking(room, user, Timestamp.from(startTime), Timestamp.from(endTime));
-    this.meetingRoomBookings.save(booking);
-    return booking;
-  }
+
+    public Optional<MeetingRoomBooking> getById(Long id) {
+        return this.meetingRoomBookings.findById(id);
+    }
+
+    public boolean deleteById(Long id) {
+        int updated = this.meetingRoomBookings.deleteByIdReturning(id);
+        return updated > 0;
+    }
+
+    @Transactional
+    public MeetingRoomBooking create(
+            Long meetingRoomId, Long userId, Instant startTime, Instant endTime)
+            throws BookingInPastException, MeetingRoomConflictException, ObjectNotFoundException {
+        Instant now = Instant.now();
+        if (endTime.isBefore(now) || startTime.isBefore(now)) {
+            throw new BookingInPastException();
+        }
+        Optional<MeetingRoomBooking> conflict =
+                this.meetingRoomBookings.findByRoomAndOverlap(
+                        meetingRoomId, Timestamp.from(startTime), Timestamp.from(endTime));
+        if (conflict.isPresent()) {
+            MeetingRoomBooking booking = conflict.get();
+            throw new MeetingRoomConflictException(
+                    booking.getId(),
+                    booking.getStartTime().toInstant(),
+                    booking.getEndTime().toInstant());
+        }
+        User user =
+                this.users
+                        .getById(userId)
+                        .orElseThrow(
+                                () -> new ObjectNotFoundException("user with id '%d'", userId));
+        MeetingRoom room =
+                this.meetingRooms
+                        .getById(meetingRoomId)
+                        .orElseThrow(
+                                () ->
+                                        new ObjectNotFoundException(
+                                                "meeting room with id '%d'", meetingRoomId));
+        var booking =
+                new MeetingRoomBooking(
+                        room, user, Timestamp.from(startTime), Timestamp.from(endTime));
+        this.meetingRoomBookings.save(booking);
+        return booking;
+    }
 }

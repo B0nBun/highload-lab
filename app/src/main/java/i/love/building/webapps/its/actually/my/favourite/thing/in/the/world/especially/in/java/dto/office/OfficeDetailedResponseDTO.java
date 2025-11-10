@@ -6,17 +6,17 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import java.util.List;
 
 public record OfficeDetailedResponseDTO(
-    Long id,
-    String name,
-    byte[] map,
-    List<MeetingRoomResponseDTO> meetingRooms,
-    List<WorkplaceResponseDTO> workplaces) {
-  public static OfficeDetailedResponseDTO fromModel(OfficeService.OfficeDetailed detailed) {
-    return new OfficeDetailedResponseDTO(
-        detailed.office().getId(),
-        detailed.office().getName(),
-        detailed.office().getMap(),
-        detailed.meetingRooms().stream().map(MeetingRoomResponseDTO::fromModel).toList(),
-        detailed.workplaces().stream().map(WorkplaceResponseDTO::fromModel).toList());
-  }
+        Long id,
+        String name,
+        byte[] map,
+        List<MeetingRoomResponseDTO> meetingRooms,
+        List<WorkplaceResponseDTO> workplaces) {
+    public static OfficeDetailedResponseDTO fromModel(OfficeService.OfficeDetailed detailed) {
+        return new OfficeDetailedResponseDTO(
+                detailed.office().getId(),
+                detailed.office().getName(),
+                detailed.office().getMap(),
+                detailed.meetingRooms().stream().map(MeetingRoomResponseDTO::fromModel).toList(),
+                detailed.workplaces().stream().map(WorkplaceResponseDTO::fromModel).toList());
+    }
 }

@@ -12,39 +12,40 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MeetingRoomService {
-  @Autowired private MeetingRoomRepository meetingRooms;
+    @Autowired private MeetingRoomRepository meetingRooms;
 
-  @Autowired private OfficeService offices;
+    @Autowired private OfficeService offices;
 
-  public List<MeetingRoom> getAll() {
-    return this.meetingRooms.findAll();
-  }
+    public List<MeetingRoom> getAll() {
+        return this.meetingRooms.findAll();
+    }
 
-  public Optional<MeetingRoom> getById(Long id) {
-    return this.meetingRooms.findById(id);
-  }
+    public Optional<MeetingRoom> getById(Long id) {
+        return this.meetingRooms.findById(id);
+    }
 
-  public List<MeetingRoom> getByOfficeId(Long officeId) {
-    return this.meetingRooms.findByOfficeId(officeId);
-  }
+    public List<MeetingRoom> getByOfficeId(Long officeId) {
+        return this.meetingRooms.findByOfficeId(officeId);
+    }
 
-  public boolean deleteById(Long id) {
-    int updated = this.meetingRooms.deleteByIdReturning(id);
-    return updated > 0;
-  }
+    public boolean deleteById(Long id) {
+        int updated = this.meetingRooms.deleteByIdReturning(id);
+        return updated > 0;
+    }
 
-  public void deleteByOfficeId(Long officeId) {
-    this.meetingRooms.deleteByOfficeId(officeId);
-  }
+    public void deleteByOfficeId(Long officeId) {
+        this.meetingRooms.deleteByOfficeId(officeId);
+    }
 
-  @Transactional
-  public MeetingRoom create(Long officeId, boolean remoteAvaialable, Long capacity)
-      throws ObjectNotFoundException {
-    Office office =
-        this.offices
-            .getById(officeId)
-            .orElseThrow(() -> new ObjectNotFoundException("office with id '%d'", officeId));
-    MeetingRoom room = new MeetingRoom(office, remoteAvaialable, capacity);
-    return this.meetingRooms.save(room);
-  }
+    @Transactional
+    public MeetingRoom create(Long officeId, boolean remoteAvaialable, Long capacity)
+            throws ObjectNotFoundException {
+        Office office =
+                this.offices
+                        .getById(officeId)
+                        .orElseThrow(
+                                () -> new ObjectNotFoundException("office with id '%d'", officeId));
+        MeetingRoom room = new MeetingRoom(office, remoteAvaialable, capacity);
+        return this.meetingRooms.save(room);
+    }
 }

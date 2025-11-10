@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SpringBootApplication
 public class App {
-  @Hidden
-  @GetMapping(value = "/")
-  String home() {
-    return "<a href=\"/docs/swagger\">Swagger UI</a><br><a href=\"/docs/openapi\">OpenAPI</a>";
-  }
+    @Hidden
+    @GetMapping(value = "/")
+    String home() {
+        return "<a href=\"/docs/swagger\">Swagger UI</a><br><a href=\"/docs/openapi\">OpenAPI</a>";
+    }
 
-  public static void main(String[] args) {
-    SpringApplication.run(App.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
 }

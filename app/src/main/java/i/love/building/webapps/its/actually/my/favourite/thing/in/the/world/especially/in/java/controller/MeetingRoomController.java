@@ -23,37 +23,38 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/meeting-room")
 public class MeetingRoomController {
-  @Autowired MeetingRoomService meetingRooms;
+    @Autowired MeetingRoomService meetingRooms;
 
-  @PostMapping(value = "/")
-  public ResponseEntity<MeetingRoomResponseDTO> createMeetingRoom(
-      @Valid @RequestBody MeetingRoomCreateRequestDTO req) {
-    try {
-      MeetingRoom meetingRoom =
-          this.meetingRooms.create(req.officeId(), req.remoteAvaialable(), req.capacity());
-      return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
-    } catch (ObjectNotFoundException e) {
-      throw e.responseException();
+    @PostMapping(value = "/")
+    public ResponseEntity<MeetingRoomResponseDTO> createMeetingRoom(
+            @Valid @RequestBody MeetingRoomCreateRequestDTO req) {
+        try {
+            MeetingRoom meetingRoom =
+                    this.meetingRooms.create(
+                            req.officeId(), req.remoteAvaialable(), req.capacity());
+            return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
-  }
 
-  @DeleteMapping(value = "/{meetingRoomId}")
-  @Operation(
-      responses = {
-        @ApiResponse(
-            responseCode = "200",
-            content = @Content(schema = @Schema(implementation = Void.class))),
-        @ApiResponse(
-            responseCode = "404",
-            description = "meeting room with specified id was not found",
-            content = @Content())
-      })
-  public ResponseEntity<Void> deleteMeetingRoom(@NotNull @PathVariable Long meetingRoomId) {
-    boolean deleted = this.meetingRooms.deleteById(meetingRoomId);
-    if (!deleted) {
-      throw new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId)
-          .responseException();
+    @DeleteMapping(value = "/{meetingRoomId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content = @Content(schema = @Schema(implementation = Void.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "meeting room with specified id was not found",
+                        content = @Content())
+            })
+    public ResponseEntity<Void> deleteMeetingRoom(@NotNull @PathVariable Long meetingRoomId) {
+        boolean deleted = this.meetingRooms.deleteById(meetingRoomId);
+        if (!deleted) {
+            throw new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId)
+                    .responseException();
+        }
+        return ResponseEntity.ok().build();
     }
-    return ResponseEntity.ok().build();
-  }
 }

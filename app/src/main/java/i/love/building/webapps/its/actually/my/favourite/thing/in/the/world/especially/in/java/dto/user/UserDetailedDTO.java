@@ -6,4 +6,4 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record UserDetailedDTO(
-    @NotNull Long id, @NotBlank String name, User.Role role, List<String> groups) {}
+        @NotNull Long id, @NotBlank String name, User.Role role, List<String> groups) {}

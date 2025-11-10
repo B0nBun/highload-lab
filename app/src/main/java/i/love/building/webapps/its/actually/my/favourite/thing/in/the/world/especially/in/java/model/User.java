@@ -12,55 +12,55 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-  @Column(name = "name", unique = true, length = 255, nullable = false)
-  private String name;
+    @Column(name = "name", unique = true, length = 255, nullable = false)
+    private String name;
 
-  @Column(name = "password_hash", length = 60, nullable = false)
-  private String passwordHash;
+    @Column(name = "password_hash", length = 60, nullable = false)
+    private String passwordHash;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "role", nullable = false)
-  private User.Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private User.Role role;
 
-  public static enum Role {
-    admin,
-    supervisor,
-    regular,
-    infrequent;
-  }
+    public static enum Role {
+        admin,
+        supervisor,
+        regular,
+        infrequent;
+    }
 
-  public User() {}
+    public User() {}
 
-  public User(String name, String passwordHash, User.Role role) {
-    this.name = name;
-    this.passwordHash = passwordHash;
-    this.role = role;
-  }
+    public User(String name, String passwordHash, User.Role role) {
+        this.name = name;
+        this.passwordHash = passwordHash;
+        this.role = role;
+    }
 
-  public Long getId() {
-    return this.id;
-  }
+    public Long getId() {
+        return this.id;
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    public String getName() {
+        return this.name;
+    }
 
-  public String getPasswordHash() {
-    return this.passwordHash;
-  }
+    public String getPasswordHash() {
+        return this.passwordHash;
+    }
 
-  public User.Role getRole() {
-    return this.role;
-  }
+    public User.Role getRole() {
+        return this.role;
+    }
 
-  public String toString() {
-    return String.format(
-        "User[id=%d, name='%s', phash='%s', role='%s']",
-        this.id, this.name, this.passwordHash, this.role);
-  }
+    public String toString() {
+        return String.format(
+                "User[id=%d, name='%s', phash='%s', role='%s']",
+                this.id, this.name, this.passwordHash, this.role);
+    }
 }

@@ -4,4 +4,4 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record WorkplaceBookingCreateRequestDTO(
-    @NotNull Long workplaceId, @NotNull Long userId, @NotNull LocalDate bookedDate) {}
+        @NotNull Long workplaceId, @NotNull Long userId, @NotNull LocalDate bookedDate) {}

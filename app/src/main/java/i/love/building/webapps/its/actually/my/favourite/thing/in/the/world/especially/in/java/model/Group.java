@@ -16,63 +16,63 @@ import java.util.Set;
 @Entity
 @Table(name = "groups")
 public class Group {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
-  Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    Long id;
 
-  @Column(name = "name", unique = true, length = 255, nullable = false)
-  String name;
+    @Column(name = "name", unique = true, length = 255, nullable = false)
+    String name;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "groups_office_rel",
-      joinColumns = @JoinColumn(name = "groups_id"),
-      inverseJoinColumns = @JoinColumn(name = "office_id"))
-  Set<Office> offices = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "groups_office_rel",
+            joinColumns = @JoinColumn(name = "groups_id"),
+            inverseJoinColumns = @JoinColumn(name = "office_id"))
+    Set<Office> offices = new HashSet<>();
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "user_groups_rel",
-      joinColumns = @JoinColumn(name = "groups_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id"))
-  Set<User> users = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_groups_rel",
+            joinColumns = @JoinColumn(name = "groups_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    Set<User> users = new HashSet<>();
 
-  public Group() {}
+    public Group() {}
 
-  public Group(String name) {
-    this.name = name;
-  }
+    public Group(String name) {
+        this.name = name;
+    }
 
-  public Long getId() {
-    return this.id;
-  }
+    public Long getId() {
+        return this.id;
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    public String getName() {
+        return this.name;
+    }
 
-  public Set<User> getUsers() {
-    return new HashSet<>(this.users);
-  }
+    public Set<User> getUsers() {
+        return new HashSet<>(this.users);
+    }
 
-  public Set<Office> getOffices() {
-    return new HashSet<>(this.offices);
-  }
+    public Set<Office> getOffices() {
+        return new HashSet<>(this.offices);
+    }
 
-  public void addUser(User user) {
-    this.users.add(user);
-  }
+    public void addUser(User user) {
+        this.users.add(user);
+    }
 
-  public void addOffice(Office office) {
-    this.offices.add(office);
-  }
+    public void addOffice(Office office) {
+        this.offices.add(office);
+    }
 
-  public void removeUser(Long userId) {
-    this.users.removeIf(u -> u.getId() == userId);
-  }
+    public void removeUser(Long userId) {
+        this.users.removeIf(u -> u.getId() == userId);
+    }
 
-  public void removeOffice(Long officeId) {
-    this.offices.removeIf(o -> o.getId() == officeId);
-  }
+    public void removeOffice(Long officeId) {
+        this.offices.removeIf(o -> o.getId() == officeId);
+    }
 }

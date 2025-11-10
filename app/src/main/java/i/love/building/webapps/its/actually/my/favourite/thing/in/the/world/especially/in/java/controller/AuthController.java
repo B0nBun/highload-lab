@@ -26,52 +26,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/auth")
 public class AuthController {
-  @Autowired private AuthService auth;
+    @Autowired private AuthService auth;
 
-  @PostMapping(value = "/register")
-  @Operation(
-      summary = "register user",
-      responses = {
-        @ApiResponse(
-            responseCode = "403",
-            description = "invalid request or user already exists",
-            content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(
-            responseCode = "200",
-            description = "user was registered",
-            content = @Content(schema = @Schema(implementation = RegisterRequestDTO.class)))
-      })
-  public ResponseEntity<RegisterResponseDTO> registerUser(
-      @Valid @RequestBody RegisterRequestDTO req) {
-    try {
-      User user = this.auth.registerUser(req.username(), req.plainPassword(), req.role());
-      return ResponseEntity.ok(RegisterResponseDTO.fromModel(user));
-    } catch (AlreadyExistsException ex) {
-      throw new ProblemResponseException(
-          HttpStatus.CONFLICT, ex, "user '%s' already exists", ex.getIdentifier());
+    @PostMapping(value = "/register")
+    @Operation(
+            summary = "register user",
+            responses = {
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "invalid request or user already exists",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "user was registered",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(implementation = RegisterRequestDTO.class)))
+            })
+    public ResponseEntity<RegisterResponseDTO> registerUser(
+            @Valid @RequestBody RegisterRequestDTO req) {
+        try {
+            User user = this.auth.registerUser(req.username(), req.plainPassword(), req.role());
+            return ResponseEntity.ok(RegisterResponseDTO.fromModel(user));
+        } catch (AlreadyExistsException ex) {
+            throw new ProblemResponseException(
+                    HttpStatus.CONFLICT, ex, "user '%s' already exists", ex.getIdentifier());
+        }
     }
-  }
 
-  @PostMapping(value = "/login")
-  @Operation(
-      summary = "sign in and authorize user",
-      responses = {
-        @ApiResponse(
-            responseCode = "401",
-            description = "invalid username or password",
-            content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(
-            responseCode = "200",
-            description = "user logged in",
-            content = @Content(schema = @Schema(implementation = LoginResponseDTO.class)))
-      })
-  public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO login) {
-    Optional<User> user = this.auth.passwordHashMatch(login.username(), login.plainPassword());
-    return user.map(LoginResponseDTO::fromModel)
-        .map(ResponseEntity::ok)
-        .orElseThrow(
-            () ->
-                new ProblemResponseException(
-                    HttpStatus.UNAUTHORIZED, "invalid username or password"));
-  }
+    @PostMapping(value = "/login")
+    @Operation(
+            summary = "sign in and authorize user",
+            responses = {
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "invalid username or password",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "user logged in",
+                        content =
+                                @Content(schema = @Schema(implementation = LoginResponseDTO.class)))
+            })
+    public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO login) {
+        Optional<User> user = this.auth.passwordHashMatch(login.username(), login.plainPassword());
+        return user.map(LoginResponseDTO::fromModel)
+                .map(ResponseEntity::ok)
+                .orElseThrow(
+                        () ->
+                                new ProblemResponseException(
+                                        HttpStatus.UNAUTHORIZED, "invalid username or password"));
+    }
 }

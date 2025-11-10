@@ -13,31 +13,31 @@ import java.time.Instant;
 
 @ValidatorAnnotation
 public record MeetingRoomBookingCreateRequestDTO(
-    @NotNull Long userId,
-    @NotNull Long meetingRoomId,
-    @NotNull Instant startTime,
-    @NotNull Instant endTime) {}
+        @NotNull Long userId,
+        @NotNull Long meetingRoomId,
+        @NotNull Instant startTime,
+        @NotNull Instant endTime) {}
 
 @Constraint(validatedBy = Validator.class)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @interface ValidatorAnnotation {
-  String message() default "booking start time must be before end time";
+    String message() default "booking start time must be before end time";
 
-  Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-  Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }
 
 class Validator
-    implements ConstraintValidator<ValidatorAnnotation, MeetingRoomBookingCreateRequestDTO> {
-  public void initialize(ValidatorAnnotation annotation) {}
+        implements ConstraintValidator<ValidatorAnnotation, MeetingRoomBookingCreateRequestDTO> {
+    public void initialize(ValidatorAnnotation annotation) {}
 
-  @Override
-  public boolean isValid(
-      MeetingRoomBookingCreateRequestDTO value, ConstraintValidatorContext context) {
-    Instant s = value.startTime();
-    Instant e = value.endTime();
-    return s.isBefore(e);
-  }
+    @Override
+    public boolean isValid(
+            MeetingRoomBookingCreateRequestDTO value, ConstraintValidatorContext context) {
+        Instant s = value.startTime();
+        Instant e = value.endTime();
+        return s.isBefore(e);
+    }
 }

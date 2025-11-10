@@ -15,21 +15,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandler {
-  @Override
-  public ResponseEntity<Object> handleMethodArgumentNotValid(
-      MethodArgumentNotValidException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    BindingResult binding = ex.getBindingResult();
-    var fieldErrs =
-        binding.getFieldErrors().stream()
-            .map(err -> String.format("'%s': %s", err.getField(), err.getDefaultMessage()));
-    var globalErrs =
-        binding.getGlobalErrors().stream()
-            .map(err -> String.format("'%s': %s", err.getObjectName(), err.getDefaultMessage()));
-    String msg = Stream.concat(fieldErrs, globalErrs).collect(Collectors.joining("; "));
-    var pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, msg);
-    return ResponseEntity.badRequest().body(pd);
-  }
+    @Override
+    public ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        BindingResult binding = ex.getBindingResult();
+        var fieldErrs =
+                binding.getFieldErrors().stream()
+                        .map(
+                                err ->
+                                        String.format(
+                                                "'%s': %s",
+                                                err.getField(), err.getDefaultMessage()));
+        var globalErrs =
+                binding.getGlobalErrors().stream()
+                        .map(
+                                err ->
+                                        String.format(
+                                                "'%s': %s",
+                                                err.getObjectName(), err.getDefaultMessage()));
+        String msg = Stream.concat(fieldErrs, globalErrs).collect(Collectors.joining("; "));
+        var pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, msg);
+        return ResponseEntity.badRequest().body(pd);
+    }
 }

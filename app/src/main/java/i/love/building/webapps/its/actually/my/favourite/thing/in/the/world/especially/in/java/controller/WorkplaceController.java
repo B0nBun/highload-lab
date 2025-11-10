@@ -23,36 +23,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/workplace")
 public class WorkplaceController {
-  @Autowired private WorkplaceService workplaces;
+    @Autowired private WorkplaceService workplaces;
 
-  @PostMapping(value = "/")
-  public ResponseEntity<WorkplaceResponseDTO> createWorkplace(
-      @Valid @RequestBody WorkplaceCreateRequestDTO req) {
-    try {
-      Workplace workplace =
-          this.workplaces.create(req.officeId(), req.monitors(), req.audioEquipment());
-      return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
-    } catch (ObjectNotFoundException e) {
-      throw e.responseException();
+    @PostMapping(value = "/")
+    public ResponseEntity<WorkplaceResponseDTO> createWorkplace(
+            @Valid @RequestBody WorkplaceCreateRequestDTO req) {
+        try {
+            Workplace workplace =
+                    this.workplaces.create(req.officeId(), req.monitors(), req.audioEquipment());
+            return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
-  }
 
-  @DeleteMapping(value = "/{workplaceId}")
-  @Operation(
-      responses = {
-        @ApiResponse(
-            responseCode = "200",
-            content = @Content(schema = @Schema(implementation = Void.class))),
-        @ApiResponse(
-            responseCode = "404",
-            description = "workplace with specified id was not found",
-            content = @Content())
-      })
-  public ResponseEntity<Void> deleteWorkplace(@NotNull @PathVariable Long workplaceId) {
-    boolean deleted = this.workplaces.deleteById(workplaceId);
-    if (!deleted) {
-      throw new ObjectNotFoundException("workplace with id '%d'", workplaceId).responseException();
+    @DeleteMapping(value = "/{workplaceId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content = @Content(schema = @Schema(implementation = Void.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "workplace with specified id was not found",
+                        content = @Content())
+            })
+    public ResponseEntity<Void> deleteWorkplace(@NotNull @PathVariable Long workplaceId) {
+        boolean deleted = this.workplaces.deleteById(workplaceId);
+        if (!deleted) {
+            throw new ObjectNotFoundException("workplace with id '%d'", workplaceId)
+                    .responseException();
+        }
+        return ResponseEntity.ok().build();
     }
-    return ResponseEntity.ok().build();
-  }
 }

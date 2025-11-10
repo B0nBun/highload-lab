@@ -24,74 +24,76 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/group")
 public class GroupController {
-  @Autowired private GroupService groups;
+    @Autowired private GroupService groups;
 
-  @GetMapping(value = "/")
-  public ResponseEntity<List<GroupDTO>> getAllGroups() {
-    List<GroupDTO> list =
-        this.groups.getAllWithoutDetails().stream().map(GroupDTO::fromModel).toList();
-    return ResponseEntity.ok(list);
-  }
-
-  @GetMapping(value = "/{groupId}")
-  public ResponseEntity<GroupDetailedDTO> getDetailedGroup(@PathVariable @NotNull Long groupId) {
-    return this.groups
-        .getById(groupId)
-        .map(GroupDetailedDTO::fromModel)
-        .map(ResponseEntity::ok)
-        .orElseThrow(
-            () -> new ObjectNotFoundException("group with id '%d'", groupId).responseException());
-  }
-
-  @PostMapping(value = "/")
-  public ResponseEntity<GroupDetailedDTO> createGroup(
-      @Valid @RequestBody GroupCreateRequestDTO req) {
-    Group group = this.groups.create(req.name());
-    return ResponseEntity.ok(
-        new GroupDetailedDTO(group.getId(), group.getName(), List.of(), List.of()));
-  }
-
-  @PostMapping(value = "/{groupId}/users")
-  public ResponseEntity<GroupDetailedDTO> addUserToGroup(
-      @NotNull @PathVariable Long groupId, @Valid @RequestBody GroupAddUserRequestDTO req) {
-    try {
-      Group group = this.groups.addUserToGroup(groupId, req.userId());
-      return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
-    } catch (ObjectNotFoundException e) {
-      throw e.responseException();
+    @GetMapping(value = "/")
+    public ResponseEntity<List<GroupDTO>> getAllGroups() {
+        List<GroupDTO> list =
+                this.groups.getAllWithoutDetails().stream().map(GroupDTO::fromModel).toList();
+        return ResponseEntity.ok(list);
     }
-  }
 
-  @DeleteMapping(value = "/{groupId}/users/{userId}")
-  public ResponseEntity<GroupDetailedDTO> removeUserFromGroup(
-      @NotNull @PathVariable Long groupId, @NotNull @PathVariable Long userId) {
-    try {
-      Group group = this.groups.removeUserFromGroup(groupId, userId);
-      return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
-    } catch (ObjectNotFoundException e) {
-      throw e.responseException();
+    @GetMapping(value = "/{groupId}")
+    public ResponseEntity<GroupDetailedDTO> getDetailedGroup(@PathVariable @NotNull Long groupId) {
+        return this.groups
+                .getById(groupId)
+                .map(GroupDetailedDTO::fromModel)
+                .map(ResponseEntity::ok)
+                .orElseThrow(
+                        () ->
+                                new ObjectNotFoundException("group with id '%d'", groupId)
+                                        .responseException());
     }
-  }
 
-  @PostMapping(value = "/{groupId}/offices")
-  public ResponseEntity<GroupDetailedDTO> addOfficeToGroup(
-      @NotNull @PathVariable Long groupId, @Valid @RequestBody GroupAddOfficeRequestDTO req) {
-    try {
-      Group group = this.groups.addOfficeToGroup(groupId, req.officeId());
-      return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
-    } catch (ObjectNotFoundException e) {
-      throw e.responseException();
+    @PostMapping(value = "/")
+    public ResponseEntity<GroupDetailedDTO> createGroup(
+            @Valid @RequestBody GroupCreateRequestDTO req) {
+        Group group = this.groups.create(req.name());
+        return ResponseEntity.ok(
+                new GroupDetailedDTO(group.getId(), group.getName(), List.of(), List.of()));
     }
-  }
 
-  @DeleteMapping(value = "/{groupId}/offices/{officeId}")
-  public ResponseEntity<GroupDetailedDTO> removeOfficeFromGroup(
-      @NotNull @PathVariable Long groupId, @NotNull @PathVariable Long officeId) {
-    try {
-      Group group = this.groups.removeOfficeFromGroup(groupId, officeId);
-      return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
-    } catch (ObjectNotFoundException e) {
-      throw e.responseException();
+    @PostMapping(value = "/{groupId}/users")
+    public ResponseEntity<GroupDetailedDTO> addUserToGroup(
+            @NotNull @PathVariable Long groupId, @Valid @RequestBody GroupAddUserRequestDTO req) {
+        try {
+            Group group = this.groups.addUserToGroup(groupId, req.userId());
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
-  }
+
+    @DeleteMapping(value = "/{groupId}/users/{userId}")
+    public ResponseEntity<GroupDetailedDTO> removeUserFromGroup(
+            @NotNull @PathVariable Long groupId, @NotNull @PathVariable Long userId) {
+        try {
+            Group group = this.groups.removeUserFromGroup(groupId, userId);
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
+    }
+
+    @PostMapping(value = "/{groupId}/offices")
+    public ResponseEntity<GroupDetailedDTO> addOfficeToGroup(
+            @NotNull @PathVariable Long groupId, @Valid @RequestBody GroupAddOfficeRequestDTO req) {
+        try {
+            Group group = this.groups.addOfficeToGroup(groupId, req.officeId());
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
+    }
+
+    @DeleteMapping(value = "/{groupId}/offices/{officeId}")
+    public ResponseEntity<GroupDetailedDTO> removeOfficeFromGroup(
+            @NotNull @PathVariable Long groupId, @NotNull @PathVariable Long officeId) {
+        try {
+            Group group = this.groups.removeOfficeFromGroup(groupId, officeId);
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
+    }
 }

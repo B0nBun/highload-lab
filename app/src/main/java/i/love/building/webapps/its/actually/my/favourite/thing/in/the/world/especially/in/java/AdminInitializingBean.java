@@ -13,26 +13,26 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AdminInitializingBean implements InitializingBean {
-  @Value("#{environment.ADMIN_PASSWORD}")
-  private String adminPassword;
+    @Value("#{environment.ADMIN_PASSWORD}")
+    private String adminPassword;
 
-  @Value("#{environment.ADMIN_USERNAME}")
-  private String adminUsername;
+    @Value("#{environment.ADMIN_USERNAME}")
+    private String adminUsername;
 
-  @Autowired private UserRepository usersRepo;
-  @Autowired private AuthService auth;
+    @Autowired private UserRepository usersRepo;
+    @Autowired private AuthService auth;
 
-  @Override
-  public void afterPropertiesSet() {
-    Optional<Long> adminId = this.usersRepo.findByName(this.adminUsername).map(User::getId);
-    if (adminId.isEmpty()) {
-      try {
-        this.auth.registerUser(this.adminUsername, this.adminPassword, User.Role.admin);
-      } catch (AlreadyExistsException e) {
-        throw new UnreachableCodeException();
-      }
-      return;
+    @Override
+    public void afterPropertiesSet() {
+        Optional<Long> adminId = this.usersRepo.findByName(this.adminUsername).map(User::getId);
+        if (adminId.isEmpty()) {
+            try {
+                this.auth.registerUser(this.adminUsername, this.adminPassword, User.Role.admin);
+            } catch (AlreadyExistsException e) {
+                throw new UnreachableCodeException();
+            }
+            return;
+        }
+        this.auth.changePassword(adminId.get(), adminPassword);
     }
-    this.auth.changePassword(adminId.get(), adminPassword);
-  }
 }

@@ -15,47 +15,47 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Service
 public class OfficeService {
-  @Autowired private MeetingRoomService meetingRooms;
+    @Autowired private MeetingRoomService meetingRooms;
 
-  @Autowired private WorkplaceService workplaces;
+    @Autowired private WorkplaceService workplaces;
 
-  @Autowired private OfficeRepository offices;
+    @Autowired private OfficeRepository offices;
 
-  public Optional<Office> getById(Long id) {
-    return this.offices.findById(id);
-  }
-
-  @Transactional
-  public Optional<OfficeDetailed> getByIdDetailed(Long id) {
-    Optional<Office> office = this.offices.findById(id);
-    if (office.isEmpty()) {
-      return Optional.empty();
+    public Optional<Office> getById(Long id) {
+        return this.offices.findById(id);
     }
-    List<Workplace> workplaces = this.workplaces.getByOfficeId(id);
-    List<MeetingRoom> meetingRooms = this.meetingRooms.getByOfficeId(id);
-    return Optional.of(new OfficeDetailed(office.get(), workplaces, meetingRooms));
-  }
 
-  @Transactional
-  public Office create(String name, byte[] map) throws AlreadyExistsException {
-    Optional<Office> existing = this.offices.findByName(name);
-    if (existing.isPresent()) {
-      throw new AlreadyExistsException("office", existing.get().getName());
+    @Transactional
+    public Optional<OfficeDetailed> getByIdDetailed(Long id) {
+        Optional<Office> office = this.offices.findById(id);
+        if (office.isEmpty()) {
+            return Optional.empty();
+        }
+        List<Workplace> workplaces = this.workplaces.getByOfficeId(id);
+        List<MeetingRoom> meetingRooms = this.meetingRooms.getByOfficeId(id);
+        return Optional.of(new OfficeDetailed(office.get(), workplaces, meetingRooms));
     }
-    Office office = new Office(name, map);
-    return this.offices.save(office);
-  }
 
-  public List<Office> getAll() {
-    return this.offices.findAll();
-  }
+    @Transactional
+    public Office create(String name, byte[] map) throws AlreadyExistsException {
+        Optional<Office> existing = this.offices.findByName(name);
+        if (existing.isPresent()) {
+            throw new AlreadyExistsException("office", existing.get().getName());
+        }
+        Office office = new Office(name, map);
+        return this.offices.save(office);
+    }
 
-  public boolean deleteById(Long officeId) {
-    this.meetingRooms.deleteByOfficeId(officeId);
-    this.workplaces.deleteByOfficeId(officeId);
-    return this.offices.deleteByIdReturning(officeId) > 0;
-  }
+    public List<Office> getAll() {
+        return this.offices.findAll();
+    }
 
-  public static record OfficeDetailed(
-      Office office, List<Workplace> workplaces, List<MeetingRoom> meetingRooms) {}
+    public boolean deleteById(Long officeId) {
+        this.meetingRooms.deleteByOfficeId(officeId);
+        this.workplaces.deleteByOfficeId(officeId);
+        return this.offices.deleteByIdReturning(officeId) > 0;
+    }
+
+    public static record OfficeDetailed(
+            Office office, List<Workplace> workplaces, List<MeetingRoom> meetingRooms) {}
 }

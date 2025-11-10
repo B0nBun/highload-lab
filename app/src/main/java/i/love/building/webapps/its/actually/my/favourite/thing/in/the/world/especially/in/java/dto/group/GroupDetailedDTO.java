@@ -6,11 +6,11 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import java.util.List;
 
 public record GroupDetailedDTO(Long id, String name, List<Long> userIds, List<Long> officeIds) {
-  public static GroupDetailedDTO fromModel(Group g) {
-    return new GroupDetailedDTO(
-        g.getId(),
-        g.getName(),
-        g.getUsers().stream().map(User::getId).toList(),
-        g.getOffices().stream().map(Office::getId).toList());
-  }
+    public static GroupDetailedDTO fromModel(Group g) {
+        return new GroupDetailedDTO(
+                g.getId(),
+                g.getName(),
+                g.getUsers().stream().map(User::getId).toList(),
+                g.getOffices().stream().map(Office::getId).toList());
+    }
 }

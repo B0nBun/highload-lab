@@ -4,4 +4,4 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import jakarta.validation.constraints.NotBlank;
 
 public record RegisterRequestDTO(
-    @NotBlank String username, @NotBlank String plainPassword, User.Role role) {}
+        @NotBlank String username, @NotBlank String plainPassword, User.Role role) {}
