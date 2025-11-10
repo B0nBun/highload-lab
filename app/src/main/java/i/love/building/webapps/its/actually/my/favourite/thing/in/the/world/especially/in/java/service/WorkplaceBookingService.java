@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorkplaceBookingService {
   @Autowired private WorkplaceBookingRepository workplaceBookings;
-  @Autowired private OfficeService office;
+  @Autowired private WorkplaceService workplaces;
   @Autowired private UserService user;
 
   public List<WorkplaceBooking> getByWorkplaceId(Long workplaceId) {
@@ -60,8 +60,8 @@ public class WorkplaceBookingService {
           bookedDate, conflict.get().getUser().getId(), workplaceId);
     }
     Workplace workplace =
-        this.office
-            .getWorkplaceById(workplaceId)
+        this.workplaces
+            .getById(workplaceId)
             .orElseThrow(() -> new ObjectNotFoundException("workplace with id '%d'", workplaceId));
     User user =
         this.user

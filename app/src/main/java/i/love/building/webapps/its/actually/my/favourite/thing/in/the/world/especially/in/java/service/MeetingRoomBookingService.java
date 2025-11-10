@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class MeetingRoomBookingService {
   @Autowired private MeetingRoomBookingRepository meetingRoomBookings;
   @Autowired private UserService users;
-  @Autowired private OfficeService office;
+  @Autowired private MeetingRoomService meetingRooms;
 
   public List<MeetingRoomBooking> getByMeetingRoomId(Long meetinRoomId) {
     return this.meetingRoomBookings.findByMeetingRoomId(meetinRoomId);
@@ -59,8 +59,8 @@ public class MeetingRoomBookingService {
             .getById(userId)
             .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", userId));
     MeetingRoom room =
-        this.office
-            .getMeetingRoomById(meetingRoomId)
+        this.meetingRooms
+            .getById(meetingRoomId)
             .orElseThrow(
                 () -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId));
     var booking =

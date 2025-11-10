@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 // TODO: Check that all unique constraints return correct HTTP statuses/responses
 // TODO: UPDATE method endpoints
 // TODO: Specify OpenAPI documentation for endpoints with errors
-// TODO: Formatter (and maybe CI)
+// TODO: Make all "list" endpoints pageable
+// TODO: Configure default RequestMapping prefix "/api"
 
 @RestController
 @SpringBootApplication
