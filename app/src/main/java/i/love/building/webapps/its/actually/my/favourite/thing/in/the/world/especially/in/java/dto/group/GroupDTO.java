@@ -6,7 +6,7 @@ public record GroupDTO(
     Long id,
     String name
 ){
-    public static GroupDTO fromEntity(Group g) {
+    public static GroupDTO fromModel(Group g) {
         return new GroupDTO(
             g.getId(),
             g.getName()

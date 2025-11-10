@@ -10,7 +10,7 @@ public record WorkplaceBookingDTO(
     Long userId,
     LocalDate bookedDate
 ){
-    public static WorkplaceBookingDTO fromEntity(WorkplaceBooking booking) {
+    public static WorkplaceBookingDTO fromModel(WorkplaceBooking booking) {
         return new WorkplaceBookingDTO(
             booking.getId(),
             booking.getWorkplace().getId(),

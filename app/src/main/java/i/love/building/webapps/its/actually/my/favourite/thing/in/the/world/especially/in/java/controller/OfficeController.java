@@ -68,7 +68,7 @@ public class OfficeController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<OfficeDTO>> getAllOffices() {
-        List<OfficeDTO> list = this.offices.getAll().stream().map(OfficeDTO::fromEntity).toList();
+        List<OfficeDTO> list = this.offices.getAll().stream().map(OfficeDTO::fromModel).toList();
         return ResponseEntity.ok(list);
     }
     

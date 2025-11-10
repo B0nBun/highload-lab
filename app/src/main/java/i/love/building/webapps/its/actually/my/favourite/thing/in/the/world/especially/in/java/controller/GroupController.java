@@ -31,14 +31,14 @@ public class GroupController {
 
     @GetMapping(value = "/")
     public ResponseEntity<List<GroupDTO>> getAllGroups() {
-        List<GroupDTO> list = this.groups.getAllWithoutDetails().stream().map(GroupDTO::fromEntity).toList();
+        List<GroupDTO> list = this.groups.getAllWithoutDetails().stream().map(GroupDTO::fromModel).toList();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<GroupDetailedDTO> getDetailedGroup(@PathVariable @NotNull Long groupId) {
         return this.groups.getById(groupId)
-            .map(GroupDetailedDTO::fromEntity)
+            .map(GroupDetailedDTO::fromModel)
             .map(ResponseEntity::ok)
             .orElseThrow(() -> new ObjectNotFoundException("group with id '%d'", groupId).responseException());
     }
@@ -56,7 +56,7 @@ public class GroupController {
     ) {
         try {
             Group group = this.groups.addUserToGroup(groupId, req.userId());
-            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
         } catch (ObjectNotFoundException e) {
             throw e.responseException();
         }
@@ -69,7 +69,7 @@ public class GroupController {
     ) {
         try {
             Group group = this.groups.removeUserFromGroup(groupId, userId);
-            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
         } catch (ObjectNotFoundException e) {
             throw e.responseException();
         }
@@ -82,7 +82,7 @@ public class GroupController {
     ) {
         try {
             Group group = this.groups.addOfficeToGroup(groupId, req.officeId());
-            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
         } catch (ObjectNotFoundException e) {
             throw e.responseException();
         }
@@ -95,7 +95,7 @@ public class GroupController {
     ) {
         try {
             Group group = this.groups.removeOfficeFromGroup(groupId, officeId);
-            return ResponseEntity.ok(GroupDetailedDTO.fromEntity(group));
+            return ResponseEntity.ok(GroupDetailedDTO.fromModel(group));
         } catch (ObjectNotFoundException e) {
             throw e.responseException();
         }

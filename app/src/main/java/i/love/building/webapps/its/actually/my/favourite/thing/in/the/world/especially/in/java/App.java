@@ -13,9 +13,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 //       (it may not without cascading)
 // TODO: Check that all unique constraints return correct HTTP statuses/responses
 // TODO: UPDATE method endpoints
-// TODO: Rename all fromEntity and fromModel to one thing
 // TODO: Specify OpenAPI documentation for endpoints with errors
-// TODO: Formatter (any maybe CI)
+// TODO: Formatter (and maybe CI)
 
 @RestController
 @SpringBootApplication

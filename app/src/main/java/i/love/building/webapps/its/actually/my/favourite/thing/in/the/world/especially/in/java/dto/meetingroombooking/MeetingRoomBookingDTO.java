@@ -11,7 +11,7 @@ public record MeetingRoomBookingDTO(
     Instant startTime,
     Instant endTime
 ){
-    public static MeetingRoomBookingDTO fromEntity(MeetingRoomBooking booking) {
+    public static MeetingRoomBookingDTO fromModel(MeetingRoomBooking booking) {
         return new MeetingRoomBookingDTO(
             booking.getId(),
             booking.getUser().getId(),

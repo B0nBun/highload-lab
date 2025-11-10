@@ -52,7 +52,7 @@ public class BookingController {
         @PathVariable @NotNull Long meetingRoomId
     ) {
         List<MeetingRoomBooking> bookings = this.meetingRoomBookings.getByMeetingRoomId(meetingRoomId);
-        return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromEntity).toList());
+        return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromModel).toList());
     }
 
     @GetMapping(value = "/meeting-room/by-user/{userId}")
@@ -60,7 +60,7 @@ public class BookingController {
         @PathVariable @NotNull Long userId
     ) {
         List<MeetingRoomBooking> bookings = this.meetingRoomBookings.getByUserId(userId);
-        return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromEntity).toList());
+        return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromModel).toList());
     }
 
     @GetMapping(value = "/meeting-room/{bookingId}")
@@ -68,7 +68,7 @@ public class BookingController {
         @PathVariable @NotNull Long bookingId
     ) {
         return this.meetingRoomBookings.getById(bookingId)
-            .map(MeetingRoomBookingDTO::fromEntity)
+            .map(MeetingRoomBookingDTO::fromModel)
             .map(ResponseEntity::ok)
             .orElseThrow(() -> new ObjectNotFoundException("meeting room booking with id '%d'", bookingId).responseException());
     }
@@ -80,7 +80,7 @@ public class BookingController {
         try {
             MeetingRoomBooking booking = this.meetingRoomBookings
                 .create(req.meetingRoomId(), req.userId(), req.startTime(), req.endTime());
-            return ResponseEntity.ok(MeetingRoomBookingDTO.fromEntity(booking));
+            return ResponseEntity.ok(MeetingRoomBookingDTO.fromModel(booking));
         } catch (MeetingRoomConflictException e) {
             throw new ProblemResponseException(
                 HttpStatus.CONFLICT,
@@ -115,7 +115,7 @@ public class BookingController {
         @PathVariable @NotNull Long workplaceId
     ) {
         List<WorkplaceBooking> bookings = this.workplaceBookings.getByWorkplaceId(workplaceId);
-        return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromEntity).toList());
+        return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromModel).toList());
     }
 
     @GetMapping(value = "/workplace/by-user/{userId}")
@@ -123,7 +123,7 @@ public class BookingController {
         @PathVariable @NotNull Long userId
     ) {
         List<WorkplaceBooking> bookings = this.workplaceBookings.getByUserId(userId);
-        return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromEntity).toList());
+        return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromModel).toList());
     }
 
     @GetMapping(value = "/workplace/{bookingId}")
@@ -131,7 +131,7 @@ public class BookingController {
         @PathVariable @NotNull Long bookingId
     ) {
         return this.workplaceBookings.getById(bookingId)
-            .map(WorkplaceBookingDTO::fromEntity)
+            .map(WorkplaceBookingDTO::fromModel)
             .map(ResponseEntity::ok)
             .orElseThrow(() -> new ObjectNotFoundException("workplace booking with id '%d'", bookingId).responseException());
     }
@@ -142,7 +142,7 @@ public class BookingController {
     ) {
         try {
             WorkplaceBooking booking = this.workplaceBookings.create(req.workplaceId(), req.userId(), req.bookedDate());
-            return ResponseEntity.ok(WorkplaceBookingDTO.fromEntity(booking));
+            return ResponseEntity.ok(WorkplaceBookingDTO.fromModel(booking));
         } catch (WorkplaceUserAlreadyBookedException e) {
             throw new ProblemResponseException(
                 HttpStatus.CONFLICT,

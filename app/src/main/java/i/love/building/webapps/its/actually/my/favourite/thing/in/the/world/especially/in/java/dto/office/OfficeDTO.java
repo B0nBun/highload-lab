@@ -7,7 +7,7 @@ public record OfficeDTO(
     String name,
     byte[] map
 ){
-    public static OfficeDTO fromEntity(Office o) {
+    public static OfficeDTO fromModel(Office o) {
         return new OfficeDTO(o.getId(), o.getName(), o.getMap());
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.user.CannotDeleteAdminException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.user.UserDTO;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -51,10 +53,11 @@ public class UserController {
         @RequestParam("size") @Min(1) @Max(50) int size
     ) {
         var pageReq = PageRequest.of(page, size);
-        List<UserDTO> users = this.users.getUsers(pageReq).stream().map(UserDTO::fromEntity).toList();
+        Pair<Long, List<User>> result = this.users.getUsers(pageReq);
+        List<UserDTO> users = result.getSecond().stream().map(UserDTO::fromModel).toList();
         return ResponseEntity
             .ok()
-            .header(Headers.pageSizeHeader, String.valueOf(users.size()))
+            .header(Headers.pageSizeHeader, Long.toString(result.getFirst()))
             .body(users);
     }
 
@@ -74,7 +77,7 @@ public class UserController {
     )
     public ResponseEntity<UserDTO> getUserById(@NotNull @PathVariable Long userId) {
         return this.users.getById(userId)
-            .map(UserDTO::fromEntity)
+            .map(UserDTO::fromModel)
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -12,7 +12,7 @@ public record GroupDetailedDTO(
     List<Long> userIds,
     List<Long> officeIds
 ){
-    public static GroupDetailedDTO fromEntity(Group g) {
+    public static GroupDetailedDTO fromModel(Group g) {
         return new GroupDetailedDTO(
             g.getId(),
             g.getName(),

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
@@ -23,8 +24,10 @@ public class UserService {
     @Autowired
     private UserRepository users;
 
-    public List<User> getUsers(Pageable pageable) {
-        return this.users.findAll(pageable).toList();
+    @Transactional
+    public Pair<Long, List<User>> getUsers(Pageable pageable) {
+        Long count = this.users.count();
+        return Pair.of(count, this.users.findAll(pageable).toList());
     }
 
     public Optional<User> getById(Long id) {

@@ -11,7 +11,7 @@ public record UserDTO(
     String name,
     User.Role role
 ){
-    public static UserDTO fromEntity(User u) {
+    public static UserDTO fromModel(User u) {
         return new UserDTO(u.getId(), u.getName(), u.getRole());
     }
 }
