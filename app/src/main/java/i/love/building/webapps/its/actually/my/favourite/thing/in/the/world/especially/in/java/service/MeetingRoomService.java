@@ -4,6 +4,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Office;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.MeetingRoomRepository;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.OfficeRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class MeetingRoomService {
     @Autowired private MeetingRoomRepository meetingRooms;
 
-    @Autowired private OfficeService offices;
+    @Autowired private OfficeRepository offices;
 
     public List<MeetingRoom> getAll() {
         return this.meetingRooms.findAll();
@@ -42,7 +43,7 @@ public class MeetingRoomService {
             throws ObjectNotFoundException {
         Office office =
                 this.offices
-                        .getById(officeId)
+                        .findById(officeId)
                         .orElseThrow(
                                 () -> new ObjectNotFoundException("office with id '%d'", officeId));
         MeetingRoom room = new MeetingRoom(office, remoteAvaialable, capacity);

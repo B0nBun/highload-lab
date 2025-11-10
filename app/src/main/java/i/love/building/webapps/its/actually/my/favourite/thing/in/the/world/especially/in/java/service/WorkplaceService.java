@@ -4,6 +4,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Office;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace.AudioEquipmentState;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.OfficeRepository;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.WorkplaceRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class WorkplaceService {
     @Autowired private WorkplaceRepository workplaces;
 
-    @Autowired private OfficeService offices;
+    @Autowired private OfficeRepository offices;
 
     public List<Workplace> getAll() {
         return this.workplaces.findAll();
@@ -43,7 +44,7 @@ public class WorkplaceService {
             throws ObjectNotFoundException {
         Office office =
                 this.offices
-                        .getById(officeId)
+                        .findById(officeId)
                         .orElseThrow(
                                 () -> new ObjectNotFoundException("office with id '%d'", officeId));
         Workplace workplace = new Workplace(office, monitors, audio);
