@@ -41,6 +41,7 @@ public class BookingController {
 
     @Autowired UserService users;
 
+    // TODO: Only return bookings which are in future
     @GetMapping(value = "/meeting-room/by-room/{meetingRoomId}")
     public ResponseEntity<List<MeetingRoomBookingDTO>> getMeetingRoomBookingsByRoom(
             @PathVariable @NotNull Long meetingRoomId) {
@@ -49,6 +50,7 @@ public class BookingController {
         return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromModel).toList());
     }
 
+    // TODO: Only return bookings which are in future
     @GetMapping(value = "/meeting-room/by-user/{userId}")
     public ResponseEntity<List<MeetingRoomBookingDTO>> getMeetingRoomBookingsByUser(
             @PathVariable @NotNull Long userId) {
@@ -103,6 +105,7 @@ public class BookingController {
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Only return bookings which are in future
     @GetMapping(value = "/workplace/by-workplace/{workplaceId}")
     public ResponseEntity<List<WorkplaceBookingDTO>> getWorkplaceBookingsByWorkplace(
             @PathVariable @NotNull Long workplaceId) {
@@ -110,6 +113,7 @@ public class BookingController {
         return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromModel).toList());
     }
 
+    // TODO: Only return bookings which are in future
     @GetMapping(value = "/workplace/by-user/{userId}")
     public ResponseEntity<List<WorkplaceBookingDTO>> getWorkplaceBookingsByUser(
             @PathVariable @NotNull Long userId) {

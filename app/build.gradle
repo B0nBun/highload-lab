@@ -53,17 +53,17 @@ application {
 }
 
 spotless {
-format 'misc', {
-	target '*.gradle', '.gitattributes', '.gitignore'
+	format 'misc', {
+		target '*.gradle', '.gitattributes', '.gitignore'
 
-	trimTrailingWhitespace()
-	leadingSpacesToTabs()
-	endWithNewline()
-}
-java {
-	googleJavaFormat('1.32.0').aosp()
-	formatAnnotations()
-}
+		trimTrailingWhitespace()
+		leadingSpacesToTabs()
+		endWithNewline()
+	}
+	java {
+		googleJavaFormat('1.32.0').aosp()
+		formatAnnotations()
+	}
 }
 
 tasks.named('test') {
