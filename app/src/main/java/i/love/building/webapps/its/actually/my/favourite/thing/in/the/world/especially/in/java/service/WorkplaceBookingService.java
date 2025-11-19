@@ -24,7 +24,7 @@ public class WorkplaceBookingService {
     public List<WorkplaceBooking> getAll() {
         return this.workplaceBookings.findAll();
     }
-    
+
     public List<WorkplaceBooking> getByWorkplaceId(Long workplaceId) {
         return this.workplaceBookings.findByWorkplaceId(workplaceId);
     }

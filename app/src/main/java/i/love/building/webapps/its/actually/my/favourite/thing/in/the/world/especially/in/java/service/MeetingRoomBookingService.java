@@ -28,7 +28,7 @@ public class MeetingRoomBookingService {
     public List<MeetingRoomBooking> getAll() {
         return this.meetingRoomBookings.findAll();
     }
-    
+
     public List<MeetingRoomBooking> getByUserId(Long userId) {
         return this.meetingRoomBookings.findByUserId(userId);
     }

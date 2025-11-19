@@ -11,9 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,8 +47,14 @@ public class WorkplaceController {
 
     @GetMapping(value = "/{workplaceId}")
     public ResponseEntity<WorkplaceResponseDTO> getById(@NotNull @PathVariable Long workplaceId) {
-        Workplace workplace = this.workplaces.getById(workplaceId)
-            .orElseThrow(() -> new ObjectNotFoundException("workplace with id '%d'", workplaceId).responseException());
+        Workplace workplace =
+                this.workplaces
+                        .getById(workplaceId)
+                        .orElseThrow(
+                                () ->
+                                        new ObjectNotFoundException(
+                                                        "workplace with id '%d'", workplaceId)
+                                                .responseException());
         return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
     }
 

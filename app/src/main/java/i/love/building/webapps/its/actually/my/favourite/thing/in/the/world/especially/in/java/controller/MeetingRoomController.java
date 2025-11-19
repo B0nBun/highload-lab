@@ -11,9 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,9 +47,16 @@ public class MeetingRoomController {
     }
 
     @GetMapping(value = "/{meetingRoomId}")
-    public ResponseEntity<MeetingRoomResponseDTO> getById(@NotNull @PathVariable Long meetingRoomId) {
-        MeetingRoom meetingRoom = this.meetingRooms.getById(meetingRoomId)
-            .orElseThrow(() -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId).responseException());
+    public ResponseEntity<MeetingRoomResponseDTO> getById(
+            @NotNull @PathVariable Long meetingRoomId) {
+        MeetingRoom meetingRoom =
+                this.meetingRooms
+                        .getById(meetingRoomId)
+                        .orElseThrow(
+                                () ->
+                                        new ObjectNotFoundException(
+                                                        "meeting room with id '%d'", meetingRoomId)
+                                                .responseException());
         return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
     }
 

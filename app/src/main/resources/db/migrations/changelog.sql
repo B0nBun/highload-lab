@@ -61,8 +61,6 @@ create table workplace_booking (
     unique (user_id, booked_date)
 );
 
--- TODO: may be possible to constraint time overlaps in psql
---       but probably better to check it only in the code
 create table meeting_booking (
     id serial primary key,
     user_id int references users(id) on delete cascade,
