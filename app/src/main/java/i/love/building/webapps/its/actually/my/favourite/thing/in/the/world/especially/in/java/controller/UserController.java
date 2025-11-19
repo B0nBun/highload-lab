@@ -83,8 +83,7 @@ public class UserController {
     @DeleteMapping(value = "/{userId}")
     @Operation(
             responses = {
-                @ApiResponse(
-                        responseCode = "200"),
+                @ApiResponse(responseCode = "200"),
                 @ApiResponse(
                         responseCode = "401",
                         description = "can not delete the main admin user",

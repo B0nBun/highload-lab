@@ -53,9 +53,15 @@ public class WorkplaceService {
     }
 
     @Transactional
-    public Workplace update(Long workplaceId, WorkplaceUpdateRequestDTO req) throws ObjectNotFoundException {
-        Workplace workplace = this.workplaces.findById(workplaceId)
-            .orElseThrow(() -> new ObjectNotFoundException("workplace with id '%d'", workplaceId));
+    public Workplace update(Long workplaceId, WorkplaceUpdateRequestDTO req)
+            throws ObjectNotFoundException {
+        Workplace workplace =
+                this.workplaces
+                        .findById(workplaceId)
+                        .orElseThrow(
+                                () ->
+                                        new ObjectNotFoundException(
+                                                "workplace with id '%d'", workplaceId));
         workplace = req.updatedModel(workplace);
         return this.workplaces.save(workplace);
     }

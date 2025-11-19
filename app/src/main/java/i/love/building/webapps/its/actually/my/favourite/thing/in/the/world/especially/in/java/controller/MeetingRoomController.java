@@ -64,9 +64,8 @@ public class MeetingRoomController {
 
     @PutMapping(value = "/{meetingRoomId}")
     public ResponseEntity<MeetingRoomResponseDTO> update(
-        @NotNull @PathVariable Long meetingRoomId,
-        @RequestBody @Valid MeetingRoomUpdateRequestDTO req
-    ) {
+            @NotNull @PathVariable Long meetingRoomId,
+            @RequestBody @Valid MeetingRoomUpdateRequestDTO req) {
         try {
             MeetingRoom meetingRoom = this.meetingRooms.update(meetingRoomId, req);
             return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));

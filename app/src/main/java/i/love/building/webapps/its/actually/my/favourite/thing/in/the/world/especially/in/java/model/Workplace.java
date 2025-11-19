@@ -45,7 +45,8 @@ public class Workplace {
         this.office = office;
     }
 
-    public Workplace(Long id, Office office, Long monitors, AudioEquipmentState audioEquipmentState) {
+    public Workplace(
+            Long id, Office office, Long monitors, AudioEquipmentState audioEquipmentState) {
         this.id = id;
         this.office = office;
         this.monitors = monitors;

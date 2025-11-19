@@ -52,9 +52,15 @@ public class MeetingRoomService {
     }
 
     @Transactional
-    public MeetingRoom update(Long meetingRoomId, MeetingRoomUpdateRequestDTO req) throws ObjectNotFoundException {
-        MeetingRoom room = this.meetingRooms.findById(meetingRoomId)
-            .orElseThrow(() -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId));
+    public MeetingRoom update(Long meetingRoomId, MeetingRoomUpdateRequestDTO req)
+            throws ObjectNotFoundException {
+        MeetingRoom room =
+                this.meetingRooms
+                        .findById(meetingRoomId)
+                        .orElseThrow(
+                                () ->
+                                        new ObjectNotFoundException(
+                                                "meeting room with id '%d'", meetingRoomId));
         room = req.updatedModel(room);
         return this.meetingRooms.save(room);
     }

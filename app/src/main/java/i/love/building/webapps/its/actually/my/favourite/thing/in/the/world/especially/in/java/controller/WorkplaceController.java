@@ -62,9 +62,8 @@ public class WorkplaceController {
 
     @PutMapping(value = "/{workplaceId}")
     public ResponseEntity<WorkplaceResponseDTO> update(
-        @NotNull @PathVariable Long workplaceId,
-        @RequestBody @Valid WorkplaceUpdateRequestDTO req
-    ) {
+            @NotNull @PathVariable Long workplaceId,
+            @RequestBody @Valid WorkplaceUpdateRequestDTO req) {
         try {
             Workplace workplace = this.workplaces.update(workplaceId, req);
             return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
