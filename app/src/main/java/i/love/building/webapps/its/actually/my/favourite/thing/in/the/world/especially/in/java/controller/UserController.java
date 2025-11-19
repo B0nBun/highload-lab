@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     @Autowired private UserService users;
 
-    // TODO: Infinite scroll or smth from requirements?
     @GetMapping(
             value = "/",
             params = {"page", "size"})

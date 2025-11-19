@@ -77,6 +77,11 @@ public class GroupService {
         return updated > 0;
     }
 
+    public boolean userHasAccessToOffice(Long userId, Long officeId) {
+        Optional<Group> g = this.groups.findByUserAndOffice(userId, officeId);
+        return g.isPresent();
+    }
+
     private Group findGroupOrThrow(Long groupId) throws ObjectNotFoundException {
         return this.groups
                 .findById(groupId)

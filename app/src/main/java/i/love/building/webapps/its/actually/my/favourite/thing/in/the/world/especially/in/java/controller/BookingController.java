@@ -4,7 +4,9 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ProblemResponseException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomConflictException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomInaccessibleToUserException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceAlreadyTakenException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceInaccessibleToUserException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceUserAlreadyBookedException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroombooking.MeetingRoomBookingCreateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroombooking.MeetingRoomBookingDTO;
@@ -86,6 +88,12 @@ public class BookingController {
                     this.meetingRoomBookings.create(
                             req.meetingRoomId(), req.userId(), req.startTime(), req.endTime());
             return ResponseEntity.ok(MeetingRoomBookingDTO.fromModel(booking));
+        } catch (MeetingRoomInaccessibleToUserException e) {
+            throw new ProblemResponseException(
+                    HttpStatus.UNAUTHORIZED,
+                    "user with id '%d' has no access to meeting room with id '%d'",
+                    e.getUserId(),
+                    e.getMeetingRoomId());
         } catch (MeetingRoomConflictException e) {
             throw new ProblemResponseException(
                     HttpStatus.CONFLICT,
@@ -153,6 +161,12 @@ public class BookingController {
                     this.workplaceBookings.create(
                             req.workplaceId(), req.userId(), req.bookedDate());
             return ResponseEntity.ok(WorkplaceBookingDTO.fromModel(booking));
+        } catch (WorkplaceInaccessibleToUserException e) {
+            throw new ProblemResponseException(
+                    HttpStatus.UNAUTHORIZED,
+                    "user with id '%d' can not access workplace with id '%d'",
+                    e.getUserId(),
+                    e.getWorkplaceId());
         } catch (WorkplaceUserAlreadyBookedException e) {
             throw new ProblemResponseException(
                     HttpStatus.CONFLICT,

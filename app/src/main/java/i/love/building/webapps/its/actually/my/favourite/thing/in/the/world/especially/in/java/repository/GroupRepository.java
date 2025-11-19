@@ -19,6 +19,11 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Query("select g from Group g where g.name = :name")
     Optional<Group> findByName(@Param("name") String name);
 
+    @Query(
+            "select g from Group g join g.users u join g.offices o where u.id = :user_id and o.id = :office_id")
+    Optional<Group> findByUserAndOffice(
+            @Param("user_id") Long userId, @Param("office_id") Long officeId);
+
     @Transactional
     @Modifying
     @Query("delete Group g where g.id = :id")

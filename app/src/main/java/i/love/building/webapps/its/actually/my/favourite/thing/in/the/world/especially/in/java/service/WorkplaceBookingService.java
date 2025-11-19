@@ -3,6 +3,7 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.BookingInPastException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceAlreadyTakenException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceInaccessibleToUserException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.workplace.WorkplaceUserAlreadyBookedException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
@@ -20,6 +21,7 @@ public class WorkplaceBookingService {
     @Autowired private WorkplaceBookingRepository workplaceBookings;
     @Autowired private WorkplaceService workplaces;
     @Autowired private UserService user;
+    @Autowired private GroupService groups;
 
     public List<WorkplaceBooking> getAll() {
         return this.workplaceBookings.findAll();
@@ -42,15 +44,26 @@ public class WorkplaceBookingService {
         return updated > 0;
     }
 
-    // TODO: Validate that user has access to this office
     @Transactional
     public WorkplaceBooking create(Long workplaceId, Long userId, LocalDate bookedDate)
             throws WorkplaceUserAlreadyBookedException,
                     BookingInPastException,
                     WorkplaceAlreadyTakenException,
-                    ObjectNotFoundException {
+                    ObjectNotFoundException,
+                    WorkplaceInaccessibleToUserException {
         if (bookedDate.isBefore(LocalDate.now())) {
             throw new BookingInPastException();
+        }
+        Workplace workplace =
+                this.workplaces
+                        .getById(workplaceId)
+                        .orElseThrow(
+                                () ->
+                                        new WorkplaceInaccessibleToUserException(
+                                                userId, workplaceId));
+        Long officeId = workplace.getOffice().getId();
+        if (!this.groups.userHasAccessToOffice(userId, officeId)) {
+            throw new WorkplaceInaccessibleToUserException(userId, workplaceId);
         }
         Optional<WorkplaceBooking> conflict =
                 this.workplaceBookings.findByUserIdAndDate(userId, bookedDate);
@@ -66,13 +79,6 @@ public class WorkplaceBookingService {
             throw new WorkplaceAlreadyTakenException(
                     bookedDate, conflict.get().getUser().getId(), workplaceId);
         }
-        Workplace workplace =
-                this.workplaces
-                        .getById(workplaceId)
-                        .orElseThrow(
-                                () ->
-                                        new ObjectNotFoundException(
-                                                "workplace with id '%d'", workplaceId));
         User user =
                 this.user
                         .getById(userId)

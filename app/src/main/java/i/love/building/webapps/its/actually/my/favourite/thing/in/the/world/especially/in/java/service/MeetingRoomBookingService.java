@@ -3,6 +3,7 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.BookingInPastException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomConflictException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.meetingroom.MeetingRoomInaccessibleToUserException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoomBooking;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
@@ -20,6 +21,7 @@ public class MeetingRoomBookingService {
     @Autowired private MeetingRoomBookingRepository meetingRoomBookings;
     @Autowired private UserService users;
     @Autowired private MeetingRoomService meetingRooms;
+    @Autowired private GroupService groups;
 
     public List<MeetingRoomBooking> getByMeetingRoomId(Long meetinRoomId) {
         return this.meetingRoomBookings.findByMeetingRoomId(meetinRoomId);
@@ -42,14 +44,26 @@ public class MeetingRoomBookingService {
         return updated > 0;
     }
 
-    // TODO: Validate that user has access to this office
     @Transactional
     public MeetingRoomBooking create(
             Long meetingRoomId, Long userId, Instant startTime, Instant endTime)
-            throws BookingInPastException, MeetingRoomConflictException, ObjectNotFoundException {
+            throws BookingInPastException,
+                    MeetingRoomConflictException,
+                    ObjectNotFoundException,
+                    MeetingRoomInaccessibleToUserException {
         Instant now = Instant.now();
         if (endTime.isBefore(now) || startTime.isBefore(now)) {
             throw new BookingInPastException();
+        }
+        MeetingRoom room =
+                this.meetingRooms
+                        .getById(meetingRoomId)
+                        .orElseThrow(
+                                () ->
+                                        new MeetingRoomInaccessibleToUserException(
+                                                userId, meetingRoomId));
+        if (!this.groups.userHasAccessToOffice(userId, room.getOffice().getId())) {
+            throw new MeetingRoomInaccessibleToUserException(userId, meetingRoomId);
         }
         Optional<MeetingRoomBooking> conflict =
                 this.meetingRoomBookings.findByRoomAndOverlap(
@@ -66,13 +80,6 @@ public class MeetingRoomBookingService {
                         .getById(userId)
                         .orElseThrow(
                                 () -> new ObjectNotFoundException("user with id '%d'", userId));
-        MeetingRoom room =
-                this.meetingRooms
-                        .getById(meetingRoomId)
-                        .orElseThrow(
-                                () ->
-                                        new ObjectNotFoundException(
-                                                "meeting room with id '%d'", meetingRoomId));
         var booking =
                 new MeetingRoomBooking(
                         room, user, Timestamp.from(startTime), Timestamp.from(endTime));
