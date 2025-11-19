@@ -51,8 +51,6 @@ public class OfficeService {
     }
 
     public boolean deleteById(Long officeId) {
-        this.meetingRooms.deleteByOfficeId(officeId);
-        this.workplaces.deleteByOfficeId(officeId);
         return this.offices.deleteByIdReturning(officeId) > 0;
     }
 

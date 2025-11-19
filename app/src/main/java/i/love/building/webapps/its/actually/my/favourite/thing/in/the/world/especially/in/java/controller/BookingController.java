@@ -58,6 +58,12 @@ public class BookingController {
         return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromModel).toList());
     }
 
+    @GetMapping(value = "/meeting-room")
+    public ResponseEntity<List<MeetingRoomBookingDTO>> getAllMeetingRoomBookings() {
+        List<MeetingRoomBooking> bookings = this.meetingRoomBookings.getAll();
+        return ResponseEntity.ok(bookings.stream().map(MeetingRoomBookingDTO::fromModel).toList());
+    }
+
     @GetMapping(value = "/meeting-room/{bookingId}")
     public ResponseEntity<MeetingRoomBookingDTO> getMeeetingRoomBooking(
             @PathVariable @NotNull Long bookingId) {
@@ -110,6 +116,13 @@ public class BookingController {
     public ResponseEntity<List<WorkplaceBookingDTO>> getWorkplaceBookingsByWorkplace(
             @PathVariable @NotNull Long workplaceId) {
         List<WorkplaceBooking> bookings = this.workplaceBookings.getByWorkplaceId(workplaceId);
+        return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromModel).toList());
+    }
+
+    // TODO: Only return bookings which are in future
+    @GetMapping(value = "/workplace")
+    public ResponseEntity<List<WorkplaceBookingDTO>> getAllWorkplaceBookings() {
+        List<WorkplaceBooking> bookings = this.workplaceBookings.getAll();
         return ResponseEntity.ok(bookings.stream().map(WorkplaceBookingDTO::fromModel).toList());
     }
 

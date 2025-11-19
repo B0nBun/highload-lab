@@ -11,9 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +40,19 @@ public class MeetingRoomController {
         } catch (ObjectNotFoundException e) {
             throw e.responseException();
         }
+    }
+
+    @GetMapping(value = "/")
+    public ResponseEntity<List<MeetingRoomResponseDTO>> getAll() {
+        List<MeetingRoom> list = this.meetingRooms.getAll();
+        return ResponseEntity.ok(list.stream().map(MeetingRoomResponseDTO::fromModel).toList());
+    }
+
+    @GetMapping(value = "/{meetingRoomId}")
+    public ResponseEntity<MeetingRoomResponseDTO> getById(@NotNull @PathVariable Long meetingRoomId) {
+        MeetingRoom meetingRoom = this.meetingRooms.getById(meetingRoomId)
+            .orElseThrow(() -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId).responseException());
+        return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
     }
 
     @DeleteMapping(value = "/{meetingRoomId}")

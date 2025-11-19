@@ -14,12 +14,12 @@ create table workplace (
     id serial primary key,
     monitors int not null,
     audio_equipment audio_equipment_state not null,
-    office_id int references office(id)
+    office_id int references office(id) on delete cascade
 );
 
 create table meeting_room (
     id serial primary key,
-    office_id int references office(id),
+    office_id int references office(id) on delete cascade,
     remote_available boolean not null,
     capacity integer not null
 );
@@ -31,8 +31,8 @@ create table groups (
 
 create table groups_office_rel (
     id serial primary key,
-    groups_id int references groups(id),
-    office_id int references office(id),
+    groups_id int references groups(id) on delete cascade,
+    office_id int references office(id) on delete cascade,
     unique (groups_id, office_id)
 );
 
@@ -48,25 +48,25 @@ create table users (
 
 create table user_groups_rel (
     id serial primary key,
-    user_id int references users(id),
-    groups_id int references groups(id),
+    user_id int references users(id) on delete cascade,
+    groups_id int references groups(id) on delete cascade,
     unique (user_id, groups_id)
 );
 
 create table workplace_booking (
     id serial primary key,
-    workplace_id int references workplace(id),
-    user_id int references users(id),
+    workplace_id int references workplace(id) on delete cascade,
+    user_id int references users(id) on delete cascade,
     booked_date date,
-    unique (user_id, date)
+    unique (user_id, booked_date)
 );
 
 -- TODO: may be possible to constraint time overlaps in psql
 --       but probably better to check it only in the code
 create table meeting_booking (
     id serial primary key,
-    user_id int references users(id),
-    meeting_room_id int references meeting_room(id),
+    user_id int references users(id) on delete cascade,
+    meeting_room_id int references meeting_room(id) on delete cascade,
     start_time timestamp,
     end_time timestamp,
     constraint start_before_end_check check ( end_time > start_time )

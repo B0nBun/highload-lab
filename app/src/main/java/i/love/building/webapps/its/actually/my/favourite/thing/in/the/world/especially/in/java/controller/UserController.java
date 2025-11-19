@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping(value = "/by-name/{userId}")
+    @DeleteMapping(value = "/{userId}")
     @Operation(
             responses = {
                 @ApiResponse(
@@ -97,7 +96,7 @@ public class UserController {
                         description = "user with specified id was not found",
                         content = @Content())
             })
-    public ResponseEntity<Void> deleteUser(@NotBlank @PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUser(@NotNull @PathVariable Long userId) {
         try {
             this.users.deleteById(userId);
             return ResponseEntity.ok().build();

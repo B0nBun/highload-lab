@@ -51,12 +51,8 @@ public class UserService {
 
     @Transactional
     public boolean deleteById(Long id) throws CannotDeleteAdminException, ObjectNotFoundException {
-        boolean isAdmin =
-                this.users
-                        .findById(id)
-                        .map(u -> u.getName() == this.adminUsername)
-                        .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", id));
-        if (isAdmin) {
+        User user = this.users.findById(id).orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", id));
+        if (user.getName() == this.adminUsername) {
             throw new CannotDeleteAdminException();
         }
         int updated = this.users.deleteByIdReturning(id);

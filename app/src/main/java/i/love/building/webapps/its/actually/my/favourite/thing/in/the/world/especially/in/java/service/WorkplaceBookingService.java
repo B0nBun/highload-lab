@@ -21,6 +21,10 @@ public class WorkplaceBookingService {
     @Autowired private WorkplaceService workplaces;
     @Autowired private UserService user;
 
+    public List<WorkplaceBooking> getAll() {
+        return this.workplaceBookings.findAll();
+    }
+    
     public List<WorkplaceBooking> getByWorkplaceId(Long workplaceId) {
         return this.workplaceBookings.findByWorkplaceId(workplaceId);
     }
@@ -38,6 +42,7 @@ public class WorkplaceBookingService {
         return updated > 0;
     }
 
+    // TODO: Validate that user has access to this office
     @Transactional
     public WorkplaceBooking create(Long workplaceId, Long userId, LocalDate bookedDate)
             throws WorkplaceUserAlreadyBookedException,

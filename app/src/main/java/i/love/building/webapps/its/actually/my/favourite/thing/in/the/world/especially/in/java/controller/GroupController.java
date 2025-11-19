@@ -45,6 +45,15 @@ public class GroupController {
                                         .responseException());
     }
 
+    @DeleteMapping(value = "/{groupId}")
+    public ResponseEntity<Void> deleteGroup(@PathVariable @NotNull Long groupId) {
+        boolean updated = this.groups.delete(groupId);
+        if (!updated) {
+            throw new ObjectNotFoundException("group with id '%d'", groupId).responseException();
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping(value = "/")
     public ResponseEntity<GroupDetailedDTO> createGroup(
             @Valid @RequestBody GroupCreateRequestDTO req) {

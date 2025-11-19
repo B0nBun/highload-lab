@@ -1,5 +1,8 @@
 package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +31,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private User.Role role;
+
+    @ManyToMany(mappedBy = "users")
+    private List<Group> groups = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<WorkplaceBooking> workplaceBookings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<MeetingRoomBooking> meetingRoomBookings = new ArrayList<>();
 
     public static enum Role {
         admin,

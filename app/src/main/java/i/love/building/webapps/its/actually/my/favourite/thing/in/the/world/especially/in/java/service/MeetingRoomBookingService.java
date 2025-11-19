@@ -25,6 +25,10 @@ public class MeetingRoomBookingService {
         return this.meetingRoomBookings.findByMeetingRoomId(meetinRoomId);
     }
 
+    public List<MeetingRoomBooking> getAll() {
+        return this.meetingRoomBookings.findAll();
+    }
+    
     public List<MeetingRoomBooking> getByUserId(Long userId) {
         return this.meetingRoomBookings.findByUserId(userId);
     }
@@ -38,6 +42,7 @@ public class MeetingRoomBookingService {
         return updated > 0;
     }
 
+    // TODO: Validate that user has access to this office
     @Transactional
     public MeetingRoomBooking create(
             Long meetingRoomId, Long userId, Instant startTime, Instant endTime)
