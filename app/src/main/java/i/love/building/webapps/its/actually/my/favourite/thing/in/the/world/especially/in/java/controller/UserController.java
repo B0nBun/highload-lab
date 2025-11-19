@@ -84,8 +84,7 @@ public class UserController {
     @Operation(
             responses = {
                 @ApiResponse(
-                        responseCode = "200",
-                        content = @Content(schema = @Schema(implementation = Void.class))),
+                        responseCode = "200"),
                 @ApiResponse(
                         responseCode = "401",
                         description = "can not delete the main admin user",

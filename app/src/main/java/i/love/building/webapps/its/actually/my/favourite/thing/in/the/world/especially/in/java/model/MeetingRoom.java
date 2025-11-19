@@ -36,6 +36,13 @@ public class MeetingRoom {
         this.capacity = capacity;
     }
 
+    public MeetingRoom(Long id, Office office, boolean remoteAvaialable, Long capacity) {
+        this.id = id;
+        this.office = office;
+        this.remoteAvaialable = remoteAvaialable;
+        this.capacity = capacity;
+    }
+
     public Long getId() {
         return this.id;
     }

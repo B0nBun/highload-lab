@@ -3,6 +3,7 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplace.WorkplaceCreateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplace.WorkplaceResponseDTO;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplace.WorkplaceUpdateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.WorkplaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +58,19 @@ public class WorkplaceController {
                                                         "workplace with id '%d'", workplaceId)
                                                 .responseException());
         return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
+    }
+
+    @PutMapping(value = "/{workplaceId}")
+    public ResponseEntity<WorkplaceResponseDTO> update(
+        @NotNull @PathVariable Long workplaceId,
+        @RequestBody @Valid WorkplaceUpdateRequestDTO req
+    ) {
+        try {
+            Workplace workplace = this.workplaces.update(workplaceId, req);
+            return ResponseEntity.ok(WorkplaceResponseDTO.fromModel(workplace));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @DeleteMapping(value = "/{workplaceId}")

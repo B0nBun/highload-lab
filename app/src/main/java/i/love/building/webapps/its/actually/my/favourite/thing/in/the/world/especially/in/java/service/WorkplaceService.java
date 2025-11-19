@@ -1,6 +1,7 @@
 package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.workplace.WorkplaceUpdateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Office;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Workplace.AudioEquipmentState;
@@ -48,6 +49,14 @@ public class WorkplaceService {
                         .orElseThrow(
                                 () -> new ObjectNotFoundException("office with id '%d'", officeId));
         Workplace workplace = new Workplace(office, monitors, audio);
+        return this.workplaces.save(workplace);
+    }
+
+    @Transactional
+    public Workplace update(Long workplaceId, WorkplaceUpdateRequestDTO req) throws ObjectNotFoundException {
+        Workplace workplace = this.workplaces.findById(workplaceId)
+            .orElseThrow(() -> new ObjectNotFoundException("workplace with id '%d'", workplaceId));
+        workplace = req.updatedModel(workplace);
         return this.workplaces.save(workplace);
     }
 }

@@ -3,6 +3,7 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomCreateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomResponseDTO;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomUpdateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.MeetingRoomService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,6 +60,19 @@ public class MeetingRoomController {
                                                         "meeting room with id '%d'", meetingRoomId)
                                                 .responseException());
         return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
+    }
+
+    @PutMapping(value = "/{meetingRoomId}")
+    public ResponseEntity<MeetingRoomResponseDTO> update(
+        @NotNull @PathVariable Long meetingRoomId,
+        @RequestBody @Valid MeetingRoomUpdateRequestDTO req
+    ) {
+        try {
+            MeetingRoom meetingRoom = this.meetingRooms.update(meetingRoomId, req);
+            return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
+        } catch (ObjectNotFoundException e) {
+            throw e.responseException();
+        }
     }
 
     @DeleteMapping(value = "/{meetingRoomId}")

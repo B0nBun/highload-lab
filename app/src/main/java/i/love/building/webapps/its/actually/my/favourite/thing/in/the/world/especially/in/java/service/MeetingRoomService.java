@@ -1,6 +1,7 @@
 package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.ObjectNotFoundException;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.meetingroom.MeetingRoomUpdateRequestDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.MeetingRoom;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Office;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.MeetingRoomRepository;
@@ -47,6 +48,14 @@ public class MeetingRoomService {
                         .orElseThrow(
                                 () -> new ObjectNotFoundException("office with id '%d'", officeId));
         MeetingRoom room = new MeetingRoom(office, remoteAvaialable, capacity);
+        return this.meetingRooms.save(room);
+    }
+
+    @Transactional
+    public MeetingRoom update(Long meetingRoomId, MeetingRoomUpdateRequestDTO req) throws ObjectNotFoundException {
+        MeetingRoom room = this.meetingRooms.findById(meetingRoomId)
+            .orElseThrow(() -> new ObjectNotFoundException("meeting room with id '%d'", meetingRoomId));
+        room = req.updatedModel(room);
         return this.meetingRooms.save(room);
     }
 }
