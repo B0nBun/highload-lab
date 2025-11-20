@@ -55,6 +55,12 @@ public class User {
         this.role = role;
     }
 
+    public User(Long id, String name, String passwordHash, User.Role role) {
+        this.name = name;
+        this.passwordHash = passwordHash;
+        this.role = role;
+    }
+
     public Long getId() {
         return this.id;
     }
