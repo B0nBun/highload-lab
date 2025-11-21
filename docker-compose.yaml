@@ -13,7 +13,7 @@ services:
       - 8.8.8.8
       - 1.1.1.1
   db:
-    image: postgres:18.1
+    image: postgres
     restart: always
     volumes:
       - db-data:/var/lib/postgresql/data

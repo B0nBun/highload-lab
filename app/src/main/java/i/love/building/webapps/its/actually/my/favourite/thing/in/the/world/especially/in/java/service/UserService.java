@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    @Value("#{environment.ADMIN_USERNAME}")
+    @Value("${lab.adminUsername}")
     private String adminUsername;
 
     @Autowired private UserRepository users;

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AdminInitializingBean implements InitializingBean {
-    @Value("#{environment.ADMIN_PASSWORD}")
+    @Value("${lab.adminPassword}")
     private String adminPassword;
 
-    @Value("#{environment.ADMIN_USERNAME}")
+    @Value("${lab.adminUsername}")
     private String adminUsername;
 
     @Autowired private UserRepository usersRepo;

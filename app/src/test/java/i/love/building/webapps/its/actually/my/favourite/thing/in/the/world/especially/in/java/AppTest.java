@@ -1,65 +1,61 @@
 package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java;
 
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.ContainerContextInitializer;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.PostgresContainer;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
-import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.repository.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
+import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.IntegrationTest;
+
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Import(PostgresContainer.class)
-@SpringBootTest()
-@ActiveProfiles("test")
-@AutoConfigureMockMvc()
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ContextConfiguration(
-    initializers = {ContainerContextInitializer.class}
-)
-public class AppTest {
+import com.jayway.jsonpath.JsonPath;
+
+import org.springframework.http.MediaType;
+
+public class AppTest extends IntegrationTest {
     @Test
-    void foo() {
-        System.out.println("foo test");
+    void isAdminAdded() throws Exception {
+        var reqAll =
+                MockMvcRequestBuilders.get("/api/user/")
+                        .queryParam("page", "0")
+                        .queryParam("size", "10");
+        this.mockMvc
+                .perform(reqAll)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("admin")));
+
+        var reqOne = MockMvcRequestBuilders.get("/api/user/by-id/1");
+        this.mockMvc.perform(reqOne).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("admin")));
     }
-    
-    // @Autowired private MockMvc mockMvc;
-    // @Autowired private UserRepository users;
 
-    // private final String testUsername = "usertester";
-    // private final String testPasswordHash = BCrypt.hashpw("plain-test-password", BCrypt.gensalt());
+    @Test
+    void canRegisterAndDeleteUser() throws Exception {
+        var postReq = MockMvcRequestBuilders.post("/api/auth/register")
+            .content("""
+                    {"username": "someone", "plainPassword": "plain-passwrd", "role": "admin"}
+                    """).contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(postReq).andExpect(MockMvcResultMatchers.status().isOk());
+        
+        var getReq =
+                MockMvcRequestBuilders.get("/api/user/")
+                        .queryParam("page", "0")
+                        .queryParam("size", "10");
+        
+        MvcResult result = this.mockMvc
+                .perform(getReq)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[-1].name", Matchers.is("someone")))
+                .andReturn();
+        String response = result.getResponse().getContentAsString();
+        Integer id = JsonPath.parse(response).read("$[-1].id");
 
-    // @BeforeAll
-    // void setup() {
-    //     var testUser = new User(1L, this.testUsername, this.testPasswordHash, User.Role.admin);
-    //     this.users.save(testUser);
-    // }
-
-    // @Test
-    // void getUserTest() throws Exception {
-    //     var req =
-    //             MockMvcRequestBuilders.get("/api/user")
-    //                     .queryParam("page", "0")
-    //                     .queryParam("size", "1");
-    //     var expectResponse =
-    //             String.format(
-    //                     """
-    //             [{"id": 1, "name": "%s", "password" "%s"}]
-    //             """,
-    //                     this.testUsername, this.testPasswordHash);
-    //     this.mockMvc
-    //             .perform(req)
-    //             .andExpect(MockMvcResultMatchers.status().isOk())
-    //             .andExpect(MockMvcResultMatchers.content().json(expectResponse));
-    // }
+        var deleteReq = MockMvcRequestBuilders.delete(String.format("/api/user/%d", id));
+        this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());
+        
+        this.mockMvc
+            .perform(getReq)
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)));
+    }
 }
