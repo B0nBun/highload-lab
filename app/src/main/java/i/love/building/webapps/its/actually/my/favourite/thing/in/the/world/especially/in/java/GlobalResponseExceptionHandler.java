@@ -9,9 +9,12 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandler {
@@ -39,5 +42,12 @@ public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandl
         String msg = Stream.concat(fieldErrs, globalErrs).collect(Collectors.joining("; "));
         var pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, msg);
         return ResponseEntity.badRequest().body(pd);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Object> handlePathVariableError(final ConstraintViolationException exception) {
+        var violations = exception.getConstraintViolations().stream().map(v -> v.getMessage()).toList();
+        String message = String.join("; ", violations);
+        return ResponseEntity.badRequest().body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message));
     }
 }
