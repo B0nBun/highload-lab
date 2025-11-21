@@ -7,7 +7,7 @@ RUN chown -R gradle /app
 USER gradle
 
 RUN echo 'POSTGRES_HOST=db' >> .env
-RUN sed -E -i 's/(POSTGRES_HOST).*=.+/\1=db/' .env
+RUN sed -E -i 's/localhost:5432/db:5432/' .env
 RUN gradle bootJar -i
 
 CMD sh ./docker-entry.sh

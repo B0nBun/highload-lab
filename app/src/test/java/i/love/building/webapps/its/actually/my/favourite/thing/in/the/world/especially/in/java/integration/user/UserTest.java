@@ -1,4 +1,4 @@
-package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java;
+package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.integration.user;
 
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.IntegrationTest;
 
@@ -12,7 +12,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import org.springframework.http.MediaType;
 
-public class AppTest extends IntegrationTest {
+public class UserTest extends IntegrationTest {
     @Test
     void isAdminAdded() throws Exception {
         var reqAll =
