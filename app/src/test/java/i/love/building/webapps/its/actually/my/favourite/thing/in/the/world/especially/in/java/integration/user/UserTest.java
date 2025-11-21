@@ -22,7 +22,7 @@ public class UserTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("admin")));
 
-        var reqOne = MockMvcRequestBuilders.get("/api/user/by-id/1");
+        var reqOne = MockMvcRequestBuilders.get("/api/user/1");
         this.mockMvc
                 .perform(reqOne)
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -63,5 +63,25 @@ public class UserTest extends IntegrationTest {
                 .perform(getReq)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)));
+    }
+
+    @Test
+    void cantDeleteMainAdmin() throws Exception {
+        var getReq = MockMvcRequestBuilders.get("/api/user/1");
+        this.mockMvc.perform(getReq)
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("admin")));
+        
+        var deleteReq = MockMvcRequestBuilders.delete("/api/user/1");
+        this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    void notFoundOnGetOrdelete() throws Exception {
+        var getReq = MockMvcRequestBuilders.get("/api/user/999999");
+        this.mockMvc.perform(getReq).andExpect(MockMvcResultMatchers.status().isNotFound());
+        
+        var deleteReq = MockMvcRequestBuilders.delete("/api/user/999999");
+        this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

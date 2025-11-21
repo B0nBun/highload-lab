@@ -55,7 +55,7 @@ public class UserService {
                 this.users
                         .findById(id)
                         .orElseThrow(() -> new ObjectNotFoundException("user with id '%d'", id));
-        if (user.getName() == this.adminUsername) {
+        if (user.getName().equals(this.adminUsername)) {
             throw new CannotDeleteAdminException();
         }
         int updated = this.users.deleteByIdReturning(id);

@@ -61,7 +61,7 @@ public class UserController {
                 .body(users);
     }
 
-    @GetMapping(value = "/by-id/{userId}")
+    @GetMapping(value = "/{userId}")
     @Operation(
             responses = {
                 @ApiResponse(
