@@ -44,7 +44,7 @@ public class WorkplaceTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"officeId": %d,"monitors": 2, "audioEquipment": "absent"}
+    {"office_id": %d,"monitors": 2, "audio_equipment": "absent"}
                     """,
                                         this.testOffice.getId()));
         this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isOk());
@@ -56,7 +56,7 @@ public class WorkplaceTest extends IntegrationTest {
                         .andExpect(MockMvcResultMatchers.jsonPath("$[0].monitors", Matchers.is(2)))
                         .andExpect(
                                 MockMvcResultMatchers.jsonPath(
-                                        "$[0].audioEquipment", Matchers.is("absent")))
+                                        "$[0].audio_equipment", Matchers.is("absent")))
                         .andReturn();
 
         String response = result.getResponse().getContentAsString();
@@ -67,7 +67,7 @@ public class WorkplaceTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                {"monitors": 3, "audioEquipment": "headset"}
+                {"monitors": 3, "audio_equipment": "headset"}
                     """);
         this.mockMvc.perform(updateReq).andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -77,7 +77,7 @@ public class WorkplaceTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.monitors", Matchers.is(3)))
                 .andExpect(
-                        MockMvcResultMatchers.jsonPath("$.audioEquipment", Matchers.is("headset")));
+                        MockMvcResultMatchers.jsonPath("$.audio_equipment", Matchers.is("headset")));
 
         var deleteReq = MockMvcRequestBuilders.delete(String.format("/api/workplace/%d", id));
         this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());

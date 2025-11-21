@@ -35,7 +35,7 @@ public class UserTest extends IntegrationTest {
                 MockMvcRequestBuilders.post("/api/auth/register")
                         .content(
                                 """
-                    {"username": "admin", "plainPassword": "plain-passwrd", "role": "admin"}
+                    {"username": "admin", "plain_password": "plain-passwrd", "role": "admin"}
                     """)
                         .contentType(MediaType.APPLICATION_JSON);
         this.mockMvc.perform(postReq).andExpect(MockMvcResultMatchers.status().isConflict());
@@ -47,7 +47,7 @@ public class UserTest extends IntegrationTest {
                 MockMvcRequestBuilders.post("/api/auth/register")
                         .content(
                                 """
-                    {"username": "someone", "plainPassword": "plain-passwrd", "role": "admin"}
+                    {"username": "someone", "plain_password": "plain-passwrd", "role": "admin"}
                     """)
                         .contentType(MediaType.APPLICATION_JSON);
         this.mockMvc.perform(postReq).andExpect(MockMvcResultMatchers.status().isOk());
@@ -104,7 +104,7 @@ public class UserTest extends IntegrationTest {
                 MockMvcRequestBuilders.post("/api/auth/register")
                         .content(
                                 """
-                    {"username": "someone", "plainPassword": "plain-passwrd", "role": "admin"}
+                    {"username": "someone", "plain_password": "plain-passwrd", "role": "admin"}
                     """)
                         .contentType(MediaType.APPLICATION_JSON);
         this.mockMvc.perform(postReq).andExpect(MockMvcResultMatchers.status().isOk());
@@ -114,7 +114,7 @@ public class UserTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                    {"username": "someone", "plainPassword": "plain-passwrd"}
+                    {"username": "someone", "plain_password": "plain-passwrd"}
                     """);
         this.mockMvc.perform(loginReq).andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -123,7 +123,7 @@ public class UserTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                    {"username": "someone", "plainPassword": "wrong-passwrd"}
+                    {"username": "someone", "plain_password": "wrong-passwrd"}
                     """);
         this.mockMvc.perform(loginReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
@@ -132,7 +132,7 @@ public class UserTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                    {"username": "non-existant-user", "plainPassword": "wrong-passwrd"}
+                    {"username": "non-existant-user", "plain_password": "wrong-passwrd"}
                     """);
         this.mockMvc.perform(loginReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }

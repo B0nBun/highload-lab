@@ -78,7 +78,7 @@ public class GroupTest extends IntegrationTest {
         this.mockMvc
                 .perform(getReq)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userIds", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user_ids", Matchers.hasSize(0)));
 
         var addUserReq =
                 MockMvcRequestBuilders.post(String.format("/api/group/%d/users", id))
@@ -86,7 +86,7 @@ public class GroupTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-                    {"userId": %d}
+                    {"user_id": %d}
                     """,
                                         this.testUser.getId()));
         this.mockMvc.perform(addUserReq).andExpect(MockMvcResultMatchers.status().isOk());
@@ -96,7 +96,7 @@ public class GroupTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$.userIds[0]", Matchers.is(testUser.getId().intValue())));
+                                "$.user_ids[0]", Matchers.is(testUser.getId().intValue())));
 
         var removeUserReq =
                 MockMvcRequestBuilders.delete(
@@ -106,7 +106,7 @@ public class GroupTest extends IntegrationTest {
         this.mockMvc
                 .perform(getReq)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userIds", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user_ids", Matchers.hasSize(0)));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class GroupTest extends IntegrationTest {
         this.mockMvc
                 .perform(getReq)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.officeIds", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.office_ids", Matchers.hasSize(0)));
 
         var addReq =
                 MockMvcRequestBuilders.post(String.format("/api/group/%d/offices", id))
@@ -126,7 +126,7 @@ public class GroupTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-                    {"officeId": %d}
+                    {"office_id": %d}
                     """,
                                         this.testOffice.getId()));
         this.mockMvc.perform(addReq).andExpect(MockMvcResultMatchers.status().isOk());
@@ -136,7 +136,7 @@ public class GroupTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$.officeIds[0]", Matchers.is(this.testOffice.getId().intValue())));
+                                "$.office_ids[0]", Matchers.is(this.testOffice.getId().intValue())));
 
         var removeReq =
                 MockMvcRequestBuilders.delete(
@@ -146,7 +146,7 @@ public class GroupTest extends IntegrationTest {
         this.mockMvc
                 .perform(getReq)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.officeIds", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.office_ids", Matchers.hasSize(0)));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class GroupTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                        {"officeId": 9999}
+                        {"office_id": 9999}
                         """);
         this.mockMvc.perform(addReq).andExpect(MockMvcResultMatchers.status().isNotFound());
 
@@ -168,7 +168,7 @@ public class GroupTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                        {"userId": 9999}
+                        {"user_id": 9999}
                         """);
         this.mockMvc.perform(addReq).andExpect(MockMvcResultMatchers.status().isNotFound());
     }

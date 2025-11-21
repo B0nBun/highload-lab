@@ -44,7 +44,7 @@ public class MeeetingRoomTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"officeId": %d,"remoteAvailable": false, "capacity": 3}
+    {"office_id": %d,"remote_available": false, "capacity": 3}
                     """,
                                         this.testOffice.getId()));
         this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isOk());
@@ -55,7 +55,7 @@ public class MeeetingRoomTest extends IntegrationTest {
                         .andExpect(MockMvcResultMatchers.status().isOk())
                         .andExpect(
                                 MockMvcResultMatchers.jsonPath(
-                                        "$[0].remoteAvailable", Matchers.is(false)))
+                                        "$[0].remote_available", Matchers.is(false)))
                         .andExpect(MockMvcResultMatchers.jsonPath("$[0].capacity", Matchers.is(3)))
                         .andReturn();
 
@@ -67,7 +67,7 @@ public class MeeetingRoomTest extends IntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                {"remoteAvailable": true, "capacity": 4}
+                {"remote_available": true, "capacity": 4}
                     """);
         this.mockMvc.perform(updateReq).andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -75,7 +75,7 @@ public class MeeetingRoomTest extends IntegrationTest {
         this.mockMvc
                 .perform(getOneReq)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.remoteAvailable", Matchers.is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.remote_available", Matchers.is(true)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.capacity", Matchers.is(4)));
 
         var deleteReq = MockMvcRequestBuilders.delete(String.format("/api/meeting-room/%d", id));

@@ -80,7 +80,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         this.testUser1.getId(),
@@ -94,11 +94,11 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .andExpect(MockMvcResultMatchers.status().isOk())
                         .andExpect(
                                 MockMvcResultMatchers.jsonPath(
-                                        "$[0].workplaceId",
+                                        "$[0].workplace_id",
                                         Matchers.is(this.testWorkplace1.getId().intValue())))
                         .andExpect(
                                 MockMvcResultMatchers.jsonPath(
-                                        "$[0].userId",
+                                        "$[0].user_id",
                                         Matchers.is(this.testUser1.getId().intValue())))
                         .andReturn();
 
@@ -111,11 +111,11 @@ public class WorkplaceBookingTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$.workplaceId",
+                                "$.workplace_id",
                                 Matchers.is(this.testWorkplace1.getId().intValue())))
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$.userId", Matchers.is(this.testUser1.getId().intValue())));
+                                "$.user_id", Matchers.is(this.testUser1.getId().intValue())));
 
         var deleteReq =
                 MockMvcRequestBuilders.delete(String.format("/api/booking/workplace/%d", id));
@@ -134,7 +134,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         this.testUser1.getId(),
@@ -152,7 +152,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
         createReq.content(
                 String.format(
                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                         this.testWorkplace2.getId(),
                         this.testUser2.getId(),
@@ -177,7 +177,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$[0].workplaceId",
+                                "$[0].workplace_id",
                                 Matchers.is(this.testWorkplace1.getId().intValue())));
 
         var getByUser =
@@ -191,7 +191,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$[0].userId", Matchers.is(this.testUser2.getId().intValue())));
+                                "$[0].user_id", Matchers.is(this.testUser2.getId().intValue())));
 
         var deleteReq =
                 MockMvcRequestBuilders.delete(
@@ -214,7 +214,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         user.getId(),
@@ -232,7 +232,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         this.testUser1.getId(),
@@ -253,7 +253,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         user.getId(),
@@ -271,7 +271,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         this.testUser1.getId(),
@@ -291,7 +291,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace1.getId(),
                                         this.testUser2.getId(),
@@ -304,7 +304,7 @@ public class WorkplaceBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+    {"workplace_id": %d, "user_id": %d, "booked_date": "%s"}
                     """,
                                         this.testWorkplace2.getId(),
                                         this.testUser1.getId(),
