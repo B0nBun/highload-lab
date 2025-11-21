@@ -76,17 +76,17 @@ test {
 }
 
 jacocoTestReport {
-    dependsOn test
+	dependsOn test
 }
 
 jacoco {
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 jacocoTestReport {
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-    }
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	}
 }

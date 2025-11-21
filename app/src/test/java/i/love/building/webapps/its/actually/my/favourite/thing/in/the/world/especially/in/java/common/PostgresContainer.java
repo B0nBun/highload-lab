@@ -5,17 +5,18 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class PostgresContainer {
-    static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres")
-            .withDatabaseName("booking_db")
-            .withUsername("booking")
-            .withPassword("password");
+    static final PostgreSQLContainer<?> postgresContainer =
+            new PostgreSQLContainer<>("postgres")
+                    .withDatabaseName("booking_db")
+                    .withUsername("booking")
+                    .withPassword("password");
 
     static void start(ConfigurableApplicationContext ctx) {
         postgresContainer.start();
         TestPropertyValues.of(
-            "spring.datasource.url=" + postgresContainer.getJdbcUrl(),
-            "spring.datasource.username=" + postgresContainer.getUsername(),
-            "spring.datasource.password=" + postgresContainer.getPassword()
-        ).applyTo(ctx);
+                        "spring.datasource.url=" + postgresContainer.getJdbcUrl(),
+                        "spring.datasource.username=" + postgresContainer.getUsername(),
+                        "spring.datasource.password=" + postgresContainer.getPassword())
+                .applyTo(ctx);
     }
 }

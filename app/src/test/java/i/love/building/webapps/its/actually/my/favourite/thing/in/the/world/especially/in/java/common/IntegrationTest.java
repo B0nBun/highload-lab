@@ -13,9 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc()
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ContextConfiguration(
-    initializers = {ContainerContextInitializer.class}
-)
+@ContextConfiguration(initializers = {ContainerContextInitializer.class})
 @Testcontainers(disabledWithoutDocker = true)
 public class IntegrationTest {
     @Autowired protected MockMvc mockMvc;
