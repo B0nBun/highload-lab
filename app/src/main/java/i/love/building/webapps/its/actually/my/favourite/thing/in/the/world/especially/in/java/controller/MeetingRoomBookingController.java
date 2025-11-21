@@ -11,11 +11,16 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.MeetingRoomBookingService;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.OfficeService;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +62,21 @@ public class MeetingRoomBookingController {
     }
 
     @GetMapping(value = "/{bookingId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                MeetingRoomBookingDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "booking with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<MeetingRoomBookingDTO> getMeeetingRoomBooking(
             @PathVariable @NotNull Long bookingId) {
         return this.meetingRoomBookings
@@ -71,6 +91,33 @@ public class MeetingRoomBookingController {
     }
 
     @PostMapping(value = "/")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                MeetingRoomBookingDTO.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "user has no access to the meeting room booking",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "meeting room has a conflicting booking",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "trying to book the room in the past",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "user or room with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<MeetingRoomBookingDTO> createMeetingRoomBooking(
             @Valid @RequestBody MeetingRoomBookingCreateRequestDTO req) {
         try {
@@ -100,6 +147,14 @@ public class MeetingRoomBookingController {
     }
 
     @DeleteMapping(value = "/{bookingId}")
+    @Operation(
+            responses = {
+                @ApiResponse(responseCode = "200"),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "booking with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<Void> deleteMeetingRoomBooking(@PathVariable @NotNull Long bookingId) {
         boolean deleted = this.meetingRoomBookings.deleteById(bookingId);
         if (!deleted) {

@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,21 @@ public class WorkplaceController {
     @Autowired private WorkplaceService workplaces;
 
     @PostMapping(value = "/")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                WorkplaceResponseDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "office with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<WorkplaceResponseDTO> createWorkplace(
             @Valid @RequestBody WorkplaceCreateRequestDTO req) {
         try {
@@ -48,6 +64,21 @@ public class WorkplaceController {
     }
 
     @GetMapping(value = "/{workplaceId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                WorkplaceResponseDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "workplace with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<WorkplaceResponseDTO> getById(@NotNull @PathVariable Long workplaceId) {
         Workplace workplace =
                 this.workplaces
@@ -61,6 +92,21 @@ public class WorkplaceController {
     }
 
     @PutMapping(value = "/{workplaceId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema =
+                                                @Schema(
+                                                        implementation =
+                                                                WorkplaceResponseDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "workplace with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<WorkplaceResponseDTO> update(
             @NotNull @PathVariable Long workplaceId,
             @RequestBody @Valid WorkplaceUpdateRequestDTO req) {

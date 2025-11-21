@@ -8,10 +8,15 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.dto.group.GroupDetailedDTO;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.Group;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.GroupService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +39,18 @@ public class GroupController {
     }
 
     @GetMapping(value = "/{groupId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema = @Schema(implementation = GroupDetailedDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "group with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<GroupDetailedDTO> getDetailedGroup(@PathVariable @NotNull Long groupId) {
         return this.groups
                 .getById(groupId)
@@ -46,6 +63,14 @@ public class GroupController {
     }
 
     @DeleteMapping(value = "/{groupId}")
+    @Operation(
+            responses = {
+                @ApiResponse(responseCode = "200"),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "group with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<Void> deleteGroup(@PathVariable @NotNull Long groupId) {
         boolean updated = this.groups.delete(groupId);
         if (!updated) {
@@ -63,6 +88,18 @@ public class GroupController {
     }
 
     @PostMapping(value = "/{groupId}/users")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema = @Schema(implementation = GroupDetailedDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "group or user with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<GroupDetailedDTO> addUserToGroup(
             @NotNull @PathVariable Long groupId, @Valid @RequestBody GroupAddUserRequestDTO req) {
         try {
@@ -74,6 +111,18 @@ public class GroupController {
     }
 
     @DeleteMapping(value = "/{groupId}/users/{userId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema = @Schema(implementation = GroupDetailedDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "group with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<GroupDetailedDTO> removeUserFromGroup(
             @NotNull @PathVariable Long groupId, @NotNull @PathVariable Long userId) {
         try {
@@ -85,6 +134,18 @@ public class GroupController {
     }
 
     @PostMapping(value = "/{groupId}/offices")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema = @Schema(implementation = GroupDetailedDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "group or office with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<GroupDetailedDTO> addOfficeToGroup(
             @NotNull @PathVariable Long groupId, @Valid @RequestBody GroupAddOfficeRequestDTO req) {
         try {
@@ -96,6 +157,18 @@ public class GroupController {
     }
 
     @DeleteMapping(value = "/{groupId}/offices/{officeId}")
+    @Operation(
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        content =
+                                @Content(
+                                        schema = @Schema(implementation = GroupDetailedDTO.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "group with specified id was not found",
+                        content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            })
     public ResponseEntity<GroupDetailedDTO> removeOfficeFromGroup(
             @NotNull @PathVariable Long groupId, @NotNull @PathVariable Long officeId) {
         try {

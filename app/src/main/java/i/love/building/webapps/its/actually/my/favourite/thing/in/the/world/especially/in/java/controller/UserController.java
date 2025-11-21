@@ -8,7 +8,6 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,19 +36,6 @@ public class UserController {
     @GetMapping(
             value = "/",
             params = {"page", "size"})
-    @Operation(
-            responses = {
-                @ApiResponse(
-                        responseCode = "200",
-                        content =
-                                @Content(
-                                        array =
-                                                @ArraySchema(
-                                                        schema =
-                                                                @Schema(
-                                                                        implementation =
-                                                                                UserDTO.class))))
-            })
     public ResponseEntity<List<UserDTO>> getUsers(
             @RequestParam("page") @Min(0) int page,
             @RequestParam("size") @Min(1) @Max(50) int size) {
