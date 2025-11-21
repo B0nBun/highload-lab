@@ -34,8 +34,7 @@ public class MeetingRoomController {
             @Valid @RequestBody MeetingRoomCreateRequestDTO req) {
         try {
             MeetingRoom meetingRoom =
-                    this.meetingRooms.create(
-                            req.officeId(), req.remoteAvaialable(), req.capacity());
+                    this.meetingRooms.create(req.officeId(), req.remoteAvailable(), req.capacity());
             return ResponseEntity.ok(MeetingRoomResponseDTO.fromModel(meetingRoom));
         } catch (ObjectNotFoundException e) {
             throw e.responseException();

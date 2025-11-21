@@ -4,6 +4,6 @@ import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.Positive;
 
 public record MeetingRoomCreateRequestDTO(
-        @NonNull Boolean remoteAvaialable,
+        @NonNull Boolean remoteAvailable,
         @NonNull @Positive Long capacity,
         @NonNull Long officeId) {}

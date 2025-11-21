@@ -40,14 +40,14 @@ public class MeetingRoomService {
     }
 
     @Transactional
-    public MeetingRoom create(Long officeId, boolean remoteAvaialable, Long capacity)
+    public MeetingRoom create(Long officeId, boolean remoteAvailable, Long capacity)
             throws ObjectNotFoundException {
         Office office =
                 this.offices
                         .findById(officeId)
                         .orElseThrow(
                                 () -> new ObjectNotFoundException("office with id '%d'", officeId));
-        MeetingRoom room = new MeetingRoom(office, remoteAvaialable, capacity);
+        MeetingRoom room = new MeetingRoom(office, remoteAvailable, capacity);
         return this.meetingRooms.save(room);
     }
 

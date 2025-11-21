@@ -23,23 +23,23 @@ public class MeetingRoom {
     private Office office;
 
     @Column(name = "remote_available", nullable = false)
-    private boolean remoteAvaialable;
+    private boolean remoteAvailable;
 
     @Column(name = "capacity", nullable = false)
     private Long capacity;
 
     public MeetingRoom() {}
 
-    public MeetingRoom(Office office, boolean remoteAvaialable, Long capacity) {
+    public MeetingRoom(Office office, boolean remoteAvailable, Long capacity) {
         this.office = office;
-        this.remoteAvaialable = remoteAvaialable;
+        this.remoteAvailable = remoteAvailable;
         this.capacity = capacity;
     }
 
-    public MeetingRoom(Long id, Office office, boolean remoteAvaialable, Long capacity) {
+    public MeetingRoom(Long id, Office office, boolean remoteAvailable, Long capacity) {
         this.id = id;
         this.office = office;
-        this.remoteAvaialable = remoteAvaialable;
+        this.remoteAvailable = remoteAvailable;
         this.capacity = capacity;
     }
 
@@ -52,7 +52,7 @@ public class MeetingRoom {
     }
 
     public boolean getRemoteAvailable() {
-        return this.remoteAvaialable;
+        return this.remoteAvailable;
     }
 
     public Long getCapacity() {
