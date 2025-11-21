@@ -36,10 +36,6 @@ public class WorkplaceService {
         return updated > 0;
     }
 
-    public void deleteByOfficeId(Long officeId) {
-        this.workplaces.deleteByOfficeId(officeId);
-    }
-
     @Transactional
     public Workplace create(Long officeId, Long monitors, AudioEquipmentState audio)
             throws ObjectNotFoundException {

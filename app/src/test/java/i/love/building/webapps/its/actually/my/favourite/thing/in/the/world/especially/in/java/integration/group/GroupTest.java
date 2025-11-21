@@ -151,6 +151,30 @@ public class GroupTest extends IntegrationTest {
 
     @Test
     @Order(4)
+    void addUsersOrOfficeToNotFoundGroup() throws Exception {
+        Integer id = this.getTestGroupId();
+
+        var addReq =
+                MockMvcRequestBuilders.post(String.format("/api/group/%d/offices", id))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                        {"officeId": 9999}
+                        """);
+        this.mockMvc.perform(addReq).andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        addReq =
+                MockMvcRequestBuilders.post(String.format("/api/group/%d/users", id))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                        {"userId": 9999}
+                        """);
+        this.mockMvc.perform(addReq).andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @Order(5)
     void canDelete() throws Exception {
         Integer id = this.getTestGroupId();
 

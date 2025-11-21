@@ -203,6 +203,88 @@ public class MeetingRoomBookingTest extends IntegrationTest {
         this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Test
+    void cantBookForUserOutsideOfOffice() throws Exception {
+        User user =
+                this.users.save(new User("meeting-room-booking-user-foo", "pass", User.Role.admin));
+
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/meeting-room/")
+                        .content(
+                                String.format(
+                                        """
+    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+                    """,
+                                        this.testMeetingRoom1.getId(),
+                                        user.getId(),
+                                        this.getTomorrowStartTime(),
+                                        this.getTomorrowStartTime()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        this.users.delete(user);
+    }
+
+    @Test
+    void bookInPast() throws Exception {
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/meeting-room/")
+                        .content(
+                                String.format(
+                                        """
+    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+                    """,
+                                        this.testMeetingRoom1.getId(),
+                                        this.testUser1.getId(),
+                                        this.getYesterdayStartTime(),
+                                        this.getYesterdayEndTime()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void conflictingBookings() throws Exception {
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/meeting-room/")
+                        .content(
+                                String.format(
+                                        """
+    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+                    """,
+                                        this.testMeetingRoom1.getId(),
+                                        this.testUser1.getId(),
+                                        this.getTomorrowStartTime(),
+                                        this.getTomorrowEndTime()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        String response =
+                this.mockMvc
+                        .perform(createReq)
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        Integer bookingId = JsonPath.parse(response).read("$.id");
+
+        createReq =
+                MockMvcRequestBuilders.post("/api/booking/meeting-room/")
+                        .content(
+                                String.format(
+                                        """
+    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+                    """,
+                                        this.testMeetingRoom1.getId(),
+                                        this.testUser2.getId(),
+                                        this.getTomorrowStartTime(),
+                                        this.getTomorrowEndTime()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isConflict());
+
+        var deleteReq =
+                MockMvcRequestBuilders.delete(
+                        String.format("/api/booking/meeting-room/%d", bookingId));
+        this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
     private String getTomorrowStartTime() {
         Instant startTime = Instant.now().plus(1, ChronoUnit.DAYS);
         return startTime.toString();
@@ -210,6 +292,16 @@ public class MeetingRoomBookingTest extends IntegrationTest {
 
     private String getTomorrowEndTime() {
         Instant startTime = Instant.now().plus(1, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS);
+        return startTime.toString();
+    }
+
+    private String getYesterdayStartTime() {
+        Instant startTime = Instant.now().minus(1, ChronoUnit.DAYS);
+        return startTime.toString();
+    }
+
+    private String getYesterdayEndTime() {
+        Instant startTime = Instant.now().minus(1, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS);
         return startTime.toString();
     }
 }

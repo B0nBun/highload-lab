@@ -21,10 +21,6 @@ public class GroupService {
         return this.groups.findAllWithoutDetails();
     }
 
-    public Optional<Group> getByName(String name) {
-        return this.groups.findByName(name);
-    }
-
     public Optional<Group> getById(Long id) {
         return this.groups.findById(id);
     }

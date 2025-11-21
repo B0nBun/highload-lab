@@ -33,6 +33,5 @@ public class AdminInitializingBean implements InitializingBean {
             }
             return;
         }
-        this.auth.changePassword(adminId.get(), adminPassword);
     }
 }

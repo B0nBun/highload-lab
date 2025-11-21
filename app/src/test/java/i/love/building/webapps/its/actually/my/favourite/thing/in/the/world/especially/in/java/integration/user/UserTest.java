@@ -30,6 +30,18 @@ public class UserTest extends IntegrationTest {
     }
 
     @Test
+    void userWithSameName() throws Exception {
+        var postReq =
+                MockMvcRequestBuilders.post("/api/auth/register")
+                        .content(
+                                """
+                    {"username": "admin", "plainPassword": "plain-passwrd", "role": "admin"}
+                    """)
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(postReq).andExpect(MockMvcResultMatchers.status().isConflict());
+    }
+
+    @Test
     void canRegisterAndDeleteUser() throws Exception {
         var postReq =
                 MockMvcRequestBuilders.post("/api/auth/register")
@@ -68,10 +80,11 @@ public class UserTest extends IntegrationTest {
     @Test
     void cantDeleteMainAdmin() throws Exception {
         var getReq = MockMvcRequestBuilders.get("/api/user/1");
-        this.mockMvc.perform(getReq)
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("admin")));
-        
+        this.mockMvc
+                .perform(getReq)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("admin")));
+
         var deleteReq = MockMvcRequestBuilders.delete("/api/user/1");
         this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
@@ -80,8 +93,47 @@ public class UserTest extends IntegrationTest {
     void notFoundOnGetOrdelete() throws Exception {
         var getReq = MockMvcRequestBuilders.get("/api/user/999999");
         this.mockMvc.perform(getReq).andExpect(MockMvcResultMatchers.status().isNotFound());
-        
+
         var deleteReq = MockMvcRequestBuilders.delete("/api/user/999999");
         this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void login() throws Exception {
+        var postReq =
+                MockMvcRequestBuilders.post("/api/auth/register")
+                        .content(
+                                """
+                    {"username": "someone", "plainPassword": "plain-passwrd", "role": "admin"}
+                    """)
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(postReq).andExpect(MockMvcResultMatchers.status().isOk());
+
+        var loginReq =
+                MockMvcRequestBuilders.post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                    {"username": "someone", "plainPassword": "plain-passwrd"}
+                    """);
+        this.mockMvc.perform(loginReq).andExpect(MockMvcResultMatchers.status().isOk());
+
+        loginReq =
+                MockMvcRequestBuilders.post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                    {"username": "someone", "plainPassword": "wrong-passwrd"}
+                    """);
+        this.mockMvc.perform(loginReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        loginReq =
+                MockMvcRequestBuilders.post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                    {"username": "non-existant-user", "plainPassword": "wrong-passwrd"}
+                    """);
+        this.mockMvc.perform(loginReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 }

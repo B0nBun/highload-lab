@@ -24,12 +24,6 @@ public class AuthService {
         return this.users.create(user);
     }
 
-    public boolean changePassword(Long id, String plainPassword) {
-        String salt = BCrypt.gensalt();
-        String hashPassword = BCrypt.hashpw(plainPassword, salt);
-        return this.users.updateUserPasswordHash(id, hashPassword);
-    }
-
     public Optional<User> passwordHashMatch(String name, String plainPassword) {
         Optional<User> user = this.users.getByName(name);
         if (user.isEmpty()) {

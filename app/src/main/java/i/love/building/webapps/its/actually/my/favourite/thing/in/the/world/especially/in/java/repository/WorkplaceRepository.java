@@ -16,9 +16,4 @@ public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
     @Modifying
     @Query("delete Workplace w where w.id = :id")
     int deleteByIdReturning(@Param("id") Long id);
-
-    @Transactional
-    @Modifying
-    @Query("delete Workplace w where w.office.id = :office_id")
-    int deleteByOfficeId(@Param("office_id") Long officeId);
 }

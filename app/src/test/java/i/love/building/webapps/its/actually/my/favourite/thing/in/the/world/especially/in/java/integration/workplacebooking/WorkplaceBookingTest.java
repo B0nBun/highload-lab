@@ -204,8 +204,104 @@ public class WorkplaceBookingTest extends IntegrationTest {
         this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Test
+    void cantBookForUserOutsideOfOffice() throws Exception {
+        User user =
+                this.users.save(new User("workplace-booking-user-foo", "pass", User.Role.admin));
+
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/workplace/")
+                        .content(
+                                String.format(
+                                        """
+    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+                    """,
+                                        this.testWorkplace1.getId(),
+                                        user.getId(),
+                                        this.getTomorrowBookedDate()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        this.users.delete(user);
+    }
+
+    @Test
+    void bookInPast() throws Exception {
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/workplace/")
+                        .content(
+                                String.format(
+                                        """
+    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+                    """,
+                                        this.testWorkplace1.getId(),
+                                        this.testUser1.getId(),
+                                        this.getYesterdayBookedDate()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void conflictingBookings() throws Exception {
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/workplace/")
+                        .content(
+                                String.format(
+                                        """
+    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+                    """,
+                                        this.testWorkplace1.getId(),
+                                        this.testUser1.getId(),
+                                        this.getTomorrowBookedDate()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        String response =
+                this.mockMvc
+                        .perform(createReq)
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        Integer bookingId = JsonPath.parse(response).read("$.id");
+
+        createReq =
+                MockMvcRequestBuilders.post("/api/booking/workplace/")
+                        .content(
+                                String.format(
+                                        """
+    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+                    """,
+                                        this.testWorkplace1.getId(),
+                                        this.testUser2.getId(),
+                                        this.getTomorrowBookedDate()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isConflict());
+
+        createReq =
+                MockMvcRequestBuilders.post("/api/booking/workplace/")
+                        .content(
+                                String.format(
+                                        """
+    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+                    """,
+                                        this.testWorkplace2.getId(),
+                                        this.testUser1.getId(),
+                                        this.getTomorrowBookedDate()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isConflict());
+
+        var deleteReq =
+                MockMvcRequestBuilders.delete(
+                        String.format("/api/booking/workplace/%d", bookingId));
+        this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
     private String getTomorrowBookedDate() {
         LocalDate date = LocalDate.now().plusDays(1);
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    private String getYesterdayBookedDate() {
+        LocalDate date = LocalDate.now().minusDays(1);
         return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

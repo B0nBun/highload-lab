@@ -35,10 +35,6 @@ public class MeetingRoomService {
         return updated > 0;
     }
 
-    public void deleteByOfficeId(Long officeId) {
-        this.meetingRooms.deleteByOfficeId(officeId);
-    }
-
     @Transactional
     public MeetingRoom create(Long officeId, boolean remoteAvailable, Long capacity)
             throws ObjectNotFoundException {

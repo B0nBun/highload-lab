@@ -54,4 +54,28 @@ public class OfficeTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
     }
+
+    @Test
+    void createWithSameName() throws Exception {
+        var createReq =
+                MockMvcRequestBuilders.post("/api/office/")
+                        .content(
+                                """
+    {"name": "test-office-name", "map": null}
+                    """)
+                        .contentType(MediaType.APPLICATION_JSON);
+        String response =
+                this.mockMvc
+                        .perform(createReq)
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        Integer id = JsonPath.parse(response).read("$.id");
+
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        var deleteReq = MockMvcRequestBuilders.delete(String.format("/api/office/%d", id));
+        this.mockMvc.perform(deleteReq).andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

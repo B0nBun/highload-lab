@@ -16,9 +16,4 @@ public interface MeetingRoomRepository extends JpaRepository<MeetingRoom, Long> 
     @Modifying
     @Query("delete MeetingRoom mr where mr.id = :id")
     int deleteByIdReturning(@Param("id") Long id);
-
-    @Transactional
-    @Modifying
-    @Query("delete MeetingRoom mr where mr.office.id = :office_id")
-    int deleteByOfficeId(@Param("office_id") Long officeId);
 }

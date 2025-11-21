@@ -44,11 +44,6 @@ public class UserService {
         return this.users.save(user);
     }
 
-    public boolean updateUserPasswordHash(Long id, String passwordHash) {
-        int updated = this.users.updatePasswordHash(id, passwordHash);
-        return updated > 0;
-    }
-
     @Transactional
     public boolean deleteById(Long id) throws CannotDeleteAdminException, ObjectNotFoundException {
         User user =
