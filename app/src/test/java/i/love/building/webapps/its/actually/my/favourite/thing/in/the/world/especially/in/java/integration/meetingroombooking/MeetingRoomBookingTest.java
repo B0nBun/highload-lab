@@ -75,7 +75,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         this.testUser1.getId(),
@@ -90,11 +90,11 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .andExpect(MockMvcResultMatchers.status().isOk())
                         .andExpect(
                                 MockMvcResultMatchers.jsonPath(
-                                        "$[0].meetingRoomId",
+                                        "$[0].meeting_room_id",
                                         Matchers.is(this.testMeetingRoom1.getId().intValue())))
                         .andExpect(
                                 MockMvcResultMatchers.jsonPath(
-                                        "$[0].userId",
+                                        "$[0].user_id",
                                         Matchers.is(this.testUser1.getId().intValue())))
                         .andReturn();
 
@@ -108,11 +108,11 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$.meetingRoomId",
+                                "$.meeting_room_id",
                                 Matchers.is(this.testMeetingRoom1.getId().intValue())))
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$.userId", Matchers.is(this.testUser1.getId().intValue())));
+                                "$.user_id", Matchers.is(this.testUser1.getId().intValue())));
 
         var deleteReq =
                 MockMvcRequestBuilders.delete(String.format("/api/booking/meeting-room/%d", id));
@@ -131,7 +131,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         this.testUser1.getId(),
@@ -150,7 +150,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
         createReq.content(
                 String.format(
                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                         this.testMeetingRoom2.getId(),
                         this.testUser2.getId(),
@@ -176,7 +176,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$[0].meetingRoomId",
+                                "$[0].meeting_room_id",
                                 Matchers.is(this.testMeetingRoom1.getId().intValue())));
 
         var getByUser =
@@ -190,7 +190,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
                 .andExpect(
                         MockMvcResultMatchers.jsonPath(
-                                "$[0].userId", Matchers.is(this.testUser2.getId().intValue())));
+                                "$[0].user_id", Matchers.is(this.testUser2.getId().intValue())));
 
         var deleteReq =
                 MockMvcRequestBuilders.delete(
@@ -213,7 +213,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         user.getId(),
@@ -232,7 +232,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         this.testUser1.getId(),
@@ -261,7 +261,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         inrequentUser.getId(),
@@ -275,7 +275,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         regularUser.getId(),
@@ -295,7 +295,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         this.testUser1.getId(),
@@ -316,7 +316,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                         .content(
                                 String.format(
                                         """
-    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+    {"meeting_room_id": %d, "user_id": %d, "start_time": "%s", "end_time": "%s"}
                     """,
                                         this.testMeetingRoom1.getId(),
                                         this.testUser2.getId(),
