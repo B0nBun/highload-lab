@@ -11,6 +11,7 @@ import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.espe
 import jakarta.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,8 @@ public class MeetingRoomBookingService {
                     MeetingRoomConflictException,
                     ObjectNotFoundException,
                     MeetingRoomInaccessibleToUserException {
+        startTime = startTime.truncatedTo(ChronoUnit.MINUTES);
+        endTime = endTime.truncatedTo(ChronoUnit.MINUTES);
         Instant now = Instant.now();
         if (endTime.isBefore(now) || startTime.isBefore(now)) {
             throw new BookingInPastException();

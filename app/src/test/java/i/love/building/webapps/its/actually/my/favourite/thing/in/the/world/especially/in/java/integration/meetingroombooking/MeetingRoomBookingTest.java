@@ -136,7 +136,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                                         this.testMeetingRoom1.getId(),
                                         this.testUser1.getId(),
                                         this.getTomorrowStartTime(),
-                                        this.getTomorrowStartTime()))
+                                        this.getTomorrowEndTime()))
                         .contentType(MediaType.APPLICATION_JSON);
         var response =
                 this.mockMvc
@@ -218,7 +218,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
                                         this.testMeetingRoom1.getId(),
                                         user.getId(),
                                         this.getTomorrowStartTime(),
-                                        this.getTomorrowStartTime()))
+                                        this.getTomorrowEndTime()))
                         .contentType(MediaType.APPLICATION_JSON);
         this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
@@ -333,12 +333,14 @@ public class MeetingRoomBookingTest extends IntegrationTest {
 
     private String getTomorrowStartTime() {
         Instant startTime = Instant.now().plus(1, ChronoUnit.DAYS);
+        System.out.println("### s" + startTime);
         return startTime.toString();
     }
 
     private String getTomorrowEndTime() {
-        Instant startTime = Instant.now().plus(1, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS);
-        return startTime.toString();
+        Instant endTime = Instant.now().plus(1, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS);
+        System.out.println("### s" + endTime);
+        return endTime.toString();
     }
 
     private String getYesterdayStartTime() {
@@ -347,7 +349,7 @@ public class MeetingRoomBookingTest extends IntegrationTest {
     }
 
     private String getYesterdayEndTime() {
-        Instant startTime = Instant.now().minus(1, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS);
-        return startTime.toString();
+        Instant endTime = Instant.now().minus(1, ChronoUnit.DAYS).plus(1, ChronoUnit.HOURS);
+        return endTime.toString();
     }
 }

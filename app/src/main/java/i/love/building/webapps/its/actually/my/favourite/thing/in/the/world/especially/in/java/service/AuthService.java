@@ -3,8 +3,8 @@ package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.esp
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.common.exception.AlreadyExistsException;
 import i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java.model.User;
 import java.util.Optional;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 @Service

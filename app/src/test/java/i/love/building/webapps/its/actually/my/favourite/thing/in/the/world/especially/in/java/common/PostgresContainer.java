@@ -6,7 +6,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 public class PostgresContainer {
     static final PostgreSQLContainer<?> postgresContainer =
-            new PostgreSQLContainer<>("postgres")
+            new PostgreSQLContainer<>("postgres:14.19")
                     .withDatabaseName("booking_db")
                     .withUsername("booking")
                     .withPassword("password");
