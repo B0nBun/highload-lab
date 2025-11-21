@@ -54,6 +54,16 @@ public class WorkplaceBookingService {
         if (bookedDate.isBefore(LocalDate.now())) {
             throw new BookingInPastException();
         }
+        User user =
+                this.user
+                        .getById(userId)
+                        .orElseThrow(
+                                () -> new ObjectNotFoundException("user with id '%d'", userId));
+
+        if (user.getRole().equals(User.Role.infrequent)
+                && LocalDate.now().until(bookedDate).getDays() > 7) {
+            throw new WorkplaceInaccessibleToUserException(userId, workplaceId);
+        }
         Workplace workplace =
                 this.workplaces
                         .getById(workplaceId)
@@ -79,11 +89,6 @@ public class WorkplaceBookingService {
             throw new WorkplaceAlreadyTakenException(
                     bookedDate, conflict.get().getUser().getId(), workplaceId);
         }
-        User user =
-                this.user
-                        .getById(userId)
-                        .orElseThrow(
-                                () -> new ObjectNotFoundException("user with id '%d'", userId));
         var booking = new WorkplaceBooking(workplace, user, bookedDate);
         this.workplaceBookings.save(booking);
         return booking;

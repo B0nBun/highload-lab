@@ -242,6 +242,29 @@ public class WorkplaceBookingTest extends IntegrationTest {
     }
 
     @Test
+    void infrequentUserCantCreateBookingOverWeek() throws Exception {
+        User user =
+                this.users.save(
+                        new User("workplace-booking-user-foo", "pass", User.Role.infrequent));
+        this.testGroup.addUser(this.testUser1);
+
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/workplace/")
+                        .content(
+                                String.format(
+                                        """
+    {"workplaceId": %d, "userId": %d, "bookedDate": "%s"}
+                    """,
+                                        this.testWorkplace1.getId(),
+                                        user.getId(),
+                                        this.getOverAWeekBookedDate()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        this.users.delete(user);
+    }
+
+    @Test
     void conflictingBookings() throws Exception {
         var createReq =
                 MockMvcRequestBuilders.post("/api/booking/workplace/")
@@ -297,6 +320,11 @@ public class WorkplaceBookingTest extends IntegrationTest {
 
     private String getTomorrowBookedDate() {
         LocalDate date = LocalDate.now().plusDays(1);
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    private String getOverAWeekBookedDate() {
+        LocalDate date = LocalDate.now().plusDays(8);
         return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 

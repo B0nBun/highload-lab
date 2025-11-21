@@ -243,6 +243,52 @@ public class MeetingRoomBookingTest extends IntegrationTest {
     }
 
     @Test
+    void regularAndInfrequentCantBook() throws Exception {
+        User regularUser =
+                this.users.save(
+                        new User("meeting-room-booking-user-regular", "pass", User.Role.regular));
+        this.testGroup.addUser(this.testUser1);
+        User inrequentUser =
+                this.users.save(
+                        new User(
+                                "meeting-room-booking-user-infrequent",
+                                "pass",
+                                User.Role.infrequent));
+        this.testGroup.addUser(this.testUser1);
+
+        var createReq =
+                MockMvcRequestBuilders.post("/api/booking/meeting-room/")
+                        .content(
+                                String.format(
+                                        """
+    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+                    """,
+                                        this.testMeetingRoom1.getId(),
+                                        inrequentUser.getId(),
+                                        this.getTomorrowStartTime(),
+                                        this.getTomorrowEndTime()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        createReq =
+                MockMvcRequestBuilders.post("/api/booking/meeting-room/")
+                        .content(
+                                String.format(
+                                        """
+    {"meetingRoomId": %d, "userId": %d, "startTime": "%s", "endTime": "%s"}
+                    """,
+                                        this.testMeetingRoom1.getId(),
+                                        regularUser.getId(),
+                                        this.getTomorrowStartTime(),
+                                        this.getTomorrowEndTime()))
+                        .contentType(MediaType.APPLICATION_JSON);
+        this.mockMvc.perform(createReq).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        this.users.delete(inrequentUser);
+        this.users.delete(regularUser);
+    }
+
+    @Test
     void conflictingBookings() throws Exception {
         var createReq =
                 MockMvcRequestBuilders.post("/api/booking/meeting-room/")

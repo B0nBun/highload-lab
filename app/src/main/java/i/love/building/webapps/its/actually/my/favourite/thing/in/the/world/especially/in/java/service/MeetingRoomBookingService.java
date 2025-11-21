@@ -44,7 +44,6 @@ public class MeetingRoomBookingService {
         return updated > 0;
     }
 
-    // TODO: Check user roles
     @Transactional
     public MeetingRoomBooking create(
             Long meetingRoomId, Long userId, Instant startTime, Instant endTime)
@@ -56,6 +55,16 @@ public class MeetingRoomBookingService {
         if (endTime.isBefore(now) || startTime.isBefore(now)) {
             throw new BookingInPastException();
         }
+
+        User user =
+                this.users
+                        .getById(userId)
+                        .orElseThrow(
+                                () -> new ObjectNotFoundException("user with id '%d'", userId));
+        if (user.getRole() == User.Role.regular || user.getRole() == User.Role.infrequent) {
+            throw new MeetingRoomInaccessibleToUserException(userId, meetingRoomId);
+        }
+
         MeetingRoom room =
                 this.meetingRooms
                         .getById(meetingRoomId)
@@ -76,11 +85,6 @@ public class MeetingRoomBookingService {
                     booking.getStartTime().toInstant(),
                     booking.getEndTime().toInstant());
         }
-        User user =
-                this.users
-                        .getById(userId)
-                        .orElseThrow(
-                                () -> new ObjectNotFoundException("user with id '%d'", userId));
         var booking =
                 new MeetingRoomBooking(
                         room, user, Timestamp.from(startTime), Timestamp.from(endTime));
