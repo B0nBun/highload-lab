@@ -1,5 +1,6 @@
 package i.love.building.webapps.its.actually.my.favourite.thing.in.the.world.especially.in.java;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandler {
@@ -45,9 +44,12 @@ public class GlobalResponseExceptionHandler extends ResponseEntityExceptionHandl
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handlePathVariableError(final ConstraintViolationException exception) {
-        var violations = exception.getConstraintViolations().stream().map(v -> v.getMessage()).toList();
+    protected ResponseEntity<Object> handlePathVariableError(
+            final ConstraintViolationException exception) {
+        var violations =
+                exception.getConstraintViolations().stream().map(v -> v.getMessage()).toList();
         String message = String.join("; ", violations);
-        return ResponseEntity.badRequest().body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message));
+        return ResponseEntity.badRequest()
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message));
     }
 }
